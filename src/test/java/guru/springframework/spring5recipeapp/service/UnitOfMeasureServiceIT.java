@@ -5,8 +5,7 @@ import guru.springframework.spring5recipeapp.domain.UnitOfMeasure;
 import guru.springframework.spring5recipeapp.repository.CategoryRepository;
 import guru.springframework.spring5recipeapp.repository.RecipeRepository;
 import guru.springframework.spring5recipeapp.repository.UnitOfMeasureRepository;
-import org.junit.Before;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,7 @@ class UnitOfMeasureServiceIT {
     @Autowired
     private RecipeRepository recipeRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         recipeRepository.deleteAll();
         unitOfMeasureRepository.deleteAll();
