@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Recipe Form</title>
+
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+          crossorigin="anonymous"
+          th:href="@{/webjars/bootstrap/4.5.2/css/bootstrap.min.css}"><!--/* Instruct Thymeleaf to replace this href CDN value with the local webjars reference */-->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"
+            th:src="@{/webjars/jquery/3.5.1/jquery.slim.min.js}"></script><!--/* Instruct Thymeleaf to replace this src CDN value with the local webjars reference */-->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+            integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+            crossorigin="anonymous"
+            th:src="@{/webjars/bootstrap/4.5.2/js/bootstrap.min.js}"></script><!--/* Instruct Thymeleaf to replace this src CDN value with the local webjars reference */-->
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-10 offset-md-1">
+            <form method="post" th:action="@{/recipes}" th:object="${recipe}">
+
+                <!--/*
+                    Display div in case of any validation error
+                        bootstrap CSS class alert-danger will display a red box
+                        th:if only shows this in case of errors
+                 */-->
+                <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+                    <p>Please Correct Errors Below</p>
+                </div>
+
+                <!--/* For saving a recipe we will be posting to url /recipes, so if we want to update an existing recipe
+                 we need to have a (hidden) reference to that recipe in the form */-->
+                <input type="hidden" th:field="*{id}"/>
+                <div class="pannel-group">
+                    <div class="card">
+                        <div class="card-header text-white bg-primary">
+                            <h1 class="card-title" th:text="${recipe.id != null ? 'Edit Recipe' : 'Add Recipe'}">Edit Recipe</h1>
+                        </div>
+                        <div class="card">
+                            <div class="card-header text-white bg-secondary">
+                                <h2 class="card-title">Main Properties</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <h5><label th:text="#{recipe.name}">Name:</label></h5><!--/* # makes sure it pulls the value from the message.properties */-->
+                                    </div>
+                                    <!--/*
+                                    If there are validation errors related to the 'name' property
+                                        - add Bootstrap CSS class has-error to make the input field red
+                                        - add a spand with Bootstrap CSS class invalid-feedback to display all validation errors related to the 'name' property
+                                     */-->
+                                    <div class="col-lg-3" th:class="${#fields.hasErrors('name')} ? 'col-lg-3 is-invalid' : 'col-lg-3'">
+                                        <input type="text" class="form-control" th:field="*{name}" th:errorClass="is-invalid" placeholder="Recipe Name"/>
+                                        <span class="invalid-feedback" th:if="${#fields.hasErrors('name')}">
+                                            <ul>
+                                                <li th:each="err : ${#fields.errors('name')}" th:text="${err}"/>
+                                            </ul>
+                                        </span>
+                                    </div>
+
+                                    <div class="col-lg-3">
+                                        <h5><label>Categories:</label></h5>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="radio" th:each="category: ${categories}">
+                                            <label>
+                                                <!-- TODO: Do we need a name on this checkbox to be able to save those values? -->
+                                                <input type="checkbox" value="" th:text="${category.name}" th:value="${category.id}"/>
+                                            </label>
+                                        </div>
+                                        <!--/*th:remove will remove those HTML elements from the static HTML used for designing this page*/-->
+                                        <div class="radio" th:remove="all">
+                                            <label>
+                                                <input type="checkbox" value=""/>
+                                                Cat 2
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <h5><label>Prep Time:</label></h5>
+                                    </div>
+                                    <div class="col-lg-3" th:class="${#fields.hasErrors('prepTimeMins')} ? 'col-lg-3 is-invalid' : 'col-lg-3'">
+                                        <input type="number" class="form-control" th:field="*{prepTimeMins}" th:errorClass="is-invalid" placeholder="Prep time in minutes"/>
+                                        <span class="invalid-feedback" th:if="${#fields.hasErrors('prepTimeMins')}">
+                                            <ul>
+                                                <li th:each="err : ${#fields.errors('prepTimeMins')}" th:text="${err}"/>
+                                            </ul>
+                                        </span>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <h5><label>Difficulty:</label></h5>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <!--/*
+                                            Iterate over the values of an Enum by referring to its FQDN
+                                            Thymeleaf is able to call the equals() method on the difficulty object and
+                                            if it is equals it will set that value as selected, so we don't need to code that part!
+                                        */-->
+                                        <select class="form-control" th:field="*{difficulty}">
+                                            <option th:each="difficultyValue : ${T(guru.springframework.spring5recipeapp.domain.Difficulty).values()}"
+                                                    th:value="${difficultyValue.name()}"
+                                                    th:text="${difficultyValue.name()}"
+                                            >
+                                                DIFFICULTY_NAME
+                                            </option>
+                                        </select>
+                                        <select class="form-control" th:remove="all">
+                                            <option>Easy</option>
+                                            <option>Medium</option>
+                                            <option>Hard</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <h5><label>Cooktime:</label></h5>
+                                    </div>
+                                    <div class="col-lg-3" th:class="${#fields.hasErrors('cookTimeMins')} ? 'col-lg-3 is-invalid' : 'col-lg-3'">
+                                        <input type="number" class="form-control" th:field="*{cookTimeMins}" th:errorClass="is-invalid" placeholder="Cooking time in minutes"/>
+                                        <span class="invalid-feedback" th:if="${#fields.hasErrors('cookTimeMins')}">
+                                            <ul>
+                                                <li th:each="err : ${#fields.errors('cookTimeMins')}" th:text="${err}"/>
+                                            </ul>
+                                        </span>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <h5><label>Servings:</label></h5>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <input type="text" class="form-control" th:field="*{yield}" placeholder="2-4 servings"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <h5><label>Source:</label></h5>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <input type="text" class="form-control" th:field="*{source}" placeholder="Where'd ya get it from"/>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <h5><label>URL:</label></h5>
+                                    </div>
+                                    <div class="col-lg-3" th:class="${#fields.hasErrors('url')} ? 'col-lg-3 is-invalid' : 'col-lg-3'">
+                                        <input type="url" class="form-control" th:field="*{url}" th:errorClass="is-invalid" placeholder="http://www.example.com"/>
+                                        <span class="invalid-feedback" th:if="${#fields.hasErrors('url')}">
+                                            <ul>
+                                                <li th:each="err : ${#fields.errors('url')}" th:text="${err}"/>
+                                            </ul>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header text-white bg-secondary">
+                            <h2 class="card-title"><label>Description</label></h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <textarea class="form-control" th:field="*{description}" rows="10" placeholder="Short description or some background context"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header text-white bg-secondary">
+                            <h2 class="card-title col-lg-11"><label>Ingredients</label></h2>
+                            <div class="col-lg-1">
+                                <a class="btn btn-secondary" href="#" role="button">Edit</a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <ul th:each="ingredient: ${recipe.ingredients}">
+                                        <li th:text="${ingredient.amount != null ? ingredient.amount : ''} + ${ingredient.unitOfMeasure != null ? ' ' + ingredient.unitOfMeasure.unit + ' of' : ''} + ' ' + ${ingredient.name}">1 Cup of milk</li>
+                                    </ul>
+                                    <!--/* Thymeleaf tag on the field using *, will give us an array that Spring will bind (the DTO objects) to.*/-->
+                                    <div th:each="ingredient, idx: ${recipe.ingredients}">
+                                        <input type="hidden" th:field="*{ingredients[__${idx.index}__].id}" />
+                                        <input type="hidden" th:field="*{ingredients[__${idx.index}__].name}" />
+                                        <input type="hidden" th:field="*{ingredients[__${idx.index}__].amount}" />
+                                        <input type="hidden" th:field="*{ingredients[__${idx.index}__].unitOfMeasure.id}" />
+                                    </div>
+                                    <div th:each="category, idx: ${recipe.categories}">
+                                        <input type="hidden" th:field="*{categories[__${idx.index}__].id}" />
+                                        <input type="hidden" th:field="*{categories[__${idx.index}__].name}" />
+                                    </div>
+                                </div>
+                            </div>
+                            <!--/*
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <label>Add new Recipe</label>
+                                    <div class="radio" th:accept="${newIngredient}">
+                                        <label>Amount:</label>
+                                        <input type="number" class="form-control" placeholder="2"/>
+                                        <label>Unit Of Measure:</label>
+                                        <input type="text" class="form-control" placeholder="Tablespoons"/>
+                                        <label>Name:</label>
+                                        <input type="text" class="form-control" placeholder="Cream"/>
+                                    </div>
+                                </div>
+                            </div>
+                            */-->
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header text-white bg-secondary">
+                            <h2 class="card-title"><label>Cooking Instructions</label></h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-12" th:class="${#fields.hasErrors('cookInstructions')} ? 'col-lg-12 is-invalid' : 'col-lg-12'">
+                                    <textarea class="form-control" th:field="*{cookInstructions}" th:errorClass="is-invalid" rows="10" placeholder="Detailed cooking instructions..."></textarea>
+                                    <span class="invalid-feedback" th:if="${#fields.hasErrors('cookInstructions')}">
+                                        <ul>
+                                            <li th:each="err : ${#fields.errors('description')}" th:text="${err}"/>
+                                        </ul>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header text-white bg-info">
+                            <h3 class="card-title"><label>Notes</label></h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <textarea class="form-control" th:field="*{notes.notes}" rows="10" placeholder="Any recipe notes? Comments?"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

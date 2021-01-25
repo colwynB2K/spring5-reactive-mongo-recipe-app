@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Recipe Home</title>
+
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+            integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+            crossorigin="anonymous"
+            th:href="@{/webjars/bootstrap/4.5.2/css/bootstrap.min.css}"><!--/* Instruct Thymeleaf to replace this href CDN value with the local webjars reference */-->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"
+            th:src="@{/webjars/jquery/3.5.1/jquery.slim.min.js}"></script><!--/* Instruct Thymeleaf to replace this src CDN value with the local webjars reference */-->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+            integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+            crossorigin="anonymous"
+            th:src="@{/webjars/bootstrap/4.5.2/js/bootstrap.min.js}"></script><!--/* Instruct Thymeleaf to replace this src CDN value with the local webjars reference */-->
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-10 offset-md-1">
+                <div class="card border-primary mb-3">
+                    <div class="card-header text-white bg-primary">
+                        <h5>My Recipes!</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive" th:if="${not #lists.isEmpty(recipes)}">
+                            <table class="table table-hover">
+                                <thead class="thead-inverse">
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Update</th>
+                                    <th>Delete</th>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="recipe: ${recipes}">
+                                        <td><a th:text="${recipe.id}" th:href="@{|/recipes/${recipe.id}|}">ID</a></td><!--/* Use literal substituion between | when you need variables inside a context path instead of @{'/recipes/' + ${recipe.id}} */-->
+                                        <td><a th:text="${recipe.name}" th:href="@{|/recipes/${recipe.id}|}">Name</a></td>
+                                        <td><a th:text="${recipe.description}" th:href="@{|/recipes/${recipe.id}|}">Description</a></td>
+                                        <td><a th:href="@{|/recipes/edit/${recipe.id}|}">Update</a></td>
+                                        <td><a th:href="@{|/recipes/${recipe.id}/delete|}">Delete</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
