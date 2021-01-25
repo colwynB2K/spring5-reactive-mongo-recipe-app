@@ -1,16 +1,12 @@
 package guru.springframework.spring5recipeapp.bootstrap;
 
 import guru.springframework.spring5recipeapp.domain.*;
-import guru.springframework.spring5recipeapp.dto.CategoryDTO;
-import guru.springframework.spring5recipeapp.dto.UnitOfMeasureDTO;
+
 import guru.springframework.spring5recipeapp.repository.CategoryRepository;
 import guru.springframework.spring5recipeapp.repository.RecipeRepository;
 import guru.springframework.spring5recipeapp.repository.UnitOfMeasureRepository;
-import guru.springframework.spring5recipeapp.service.CategoryService;
-import guru.springframework.spring5recipeapp.service.RecipeService;
-import guru.springframework.spring5recipeapp.service.UnitOfMeasureService;
+import guru.springframework.spring5recipeapp.repository.reactive.UnitOfMeasureReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
@@ -33,6 +29,9 @@ public class DataInitializer implements ApplicationListener<ContextRefreshedEven
     private final UnitOfMeasureRepository unitOfMeasureRepository;
 
     @Autowired
+    UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
+
+    @Autowired
     public DataInitializer(CategoryRepository categoryRepository,
                            RecipeRepository recipeRepository,
                            UnitOfMeasureRepository unitOfMeasureRepository) {
@@ -48,6 +47,10 @@ public class DataInitializer implements ApplicationListener<ContextRefreshedEven
         loadCategories();
         loadUom();
         recipeRepository.saveAll(getRecipes());
+
+        // Some ugly temporary test code here
+        log.error("########");
+        log.error("Count: " + unitOfMeasureReactiveRepository.count().block()); // .block() will make sure the Mono publisher will return its stream content now
     }
 
     private void loadCategories(){

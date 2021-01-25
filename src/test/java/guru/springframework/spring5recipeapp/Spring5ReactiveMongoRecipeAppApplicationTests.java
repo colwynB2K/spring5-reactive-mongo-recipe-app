@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @Disabled
 @SpringBootTest
-class Spring5RecipeAppApplicationTests {
+class Spring5ReactiveMongoRecipeAppApplicationTests {
 
     @Test
     void contextLoads() {
