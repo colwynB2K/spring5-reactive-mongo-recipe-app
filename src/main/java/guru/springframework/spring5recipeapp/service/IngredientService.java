@@ -1,11 +1,12 @@
 package guru.springframework.spring5recipeapp.service;
 
 import guru.springframework.spring5recipeapp.dto.IngredientDTO;
+import reactor.core.publisher.Mono;
 
 public interface IngredientService {
-    IngredientDTO findById(String ingredientId);
+    Mono<IngredientDTO> findById(String ingredientId);
 
-    IngredientDTO saveIngredientOnRecipe(String recipeId, IngredientDTO ingredientDTO);
+    Mono<IngredientDTO> saveIngredientOnRecipe(String recipeId, IngredientDTO ingredientDTO);
 
-    void deleteById(String ingredientId);
+    Mono<Void> deleteById(String ingredientId);
 }

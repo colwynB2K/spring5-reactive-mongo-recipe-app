@@ -4,7 +4,7 @@ import guru.springframework.spring5recipeapp.bootstrap.DataInitializer;
 import guru.springframework.spring5recipeapp.domain.UnitOfMeasure;
 import guru.springframework.spring5recipeapp.repository.CategoryRepository;
 import guru.springframework.spring5recipeapp.repository.RecipeRepository;
-import guru.springframework.spring5recipeapp.repository.UnitOfMeasureRepository;
+import guru.springframework.spring5recipeapp.repository.reactive.UnitOfMeasureReactiveRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +22,7 @@ class UnitOfMeasureServiceIT {
     private final static String UOM_CUP = "Cup";
 
     @Autowired
-    private UnitOfMeasureRepository unitOfMeasureRepository;                                    // Because we are wiring in the actual bean and not a mock and calling the real persistence layer this is an integration test
+    private UnitOfMeasureReactiveRepository unitOfMeasureRepository;                                    // Because we are wiring in the actual bean and not a mock and calling the real persistence layer this is an integration test
     @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
@@ -42,7 +42,7 @@ class UnitOfMeasureServiceIT {
 
     @Test
     void getUOMByName() {
-        UnitOfMeasure actualUOM =  unitOfMeasureRepository.findByName(UOM_CUP).get();
+        UnitOfMeasure actualUOM =  unitOfMeasureRepository.findByName(UOM_CUP).block();
 
         assertEquals(UOM_CUP, actualUOM.getName());
     }

@@ -1,14 +1,14 @@
 package guru.springframework.spring5recipeapp.service;
 
 import guru.springframework.spring5recipeapp.dto.UnitOfMeasureDTO;
-
-import java.util.Set;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface UnitOfMeasureService {
 
-    UnitOfMeasureDTO getUOMByName(String name);
+    Mono<UnitOfMeasureDTO> getUOMByName(String name);
 
-    Set<UnitOfMeasureDTO> findAll();
+    Flux<UnitOfMeasureDTO> findAll();
 
-    UnitOfMeasureDTO findById(String id);
+    Mono<UnitOfMeasureDTO> findById(String id);
 }

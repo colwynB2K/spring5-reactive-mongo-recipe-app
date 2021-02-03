@@ -15,8 +15,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -44,7 +47,7 @@ class IngredientControllerTest {
     private MockMvc mockMvc;
 
     private String recipeId = "2";
-    private Set<UnitOfMeasureDTO> uomList;
+    private Flux<UnitOfMeasureDTO> uomList;
 
     @BeforeEach
     void setUp() {
@@ -52,9 +55,9 @@ class IngredientControllerTest {
                 .setControllerAdvice(new ControllerExceptionHandler())
                 .build();
 
-        uomList = new HashSet<>();
+
         UnitOfMeasureDTO unitOfMeasureDTO = new UnitOfMeasureDTO();
-        uomList.add(unitOfMeasureDTO);
+        uomList = Flux.just(unitOfMeasureDTO);
     }
 
     @Test
@@ -80,14 +83,14 @@ class IngredientControllerTest {
         IngredientDTO ingredientDTO = new IngredientDTO();
 
         // when
-        when(mockIngredientService.findById(anyString())).thenReturn(ingredientDTO);
+        when(mockIngredientService.findById(anyString())).thenReturn(Mono.just(ingredientDTO));
         when(mockUnitOfMeasureService.findAll()).thenReturn(uomList);
 
         // then
         mockMvc.perform(get("/recipes/1/ingredients/2"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("ingredient", ingredientDTO))
-                .andExpect(model().attribute("uomList", uomList))
+                .andExpect(model().attribute("uomList", uomList.collectList().block()))
                 .andExpect(view().name("recipes/ingredients/form"));
         verify(mockIngredientService).findById(anyString());
         verify(mockUnitOfMeasureService).findAll();
@@ -106,7 +109,7 @@ class IngredientControllerTest {
         mockMvc.perform(get("/recipes/1/ingredients/new"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("ingredient"))
-                .andExpect(model().attribute("uomList", uomList))
+                .andExpect(model().attribute("uomList", uomList.collectList().block()))
                 .andExpect(view().name("recipes/ingredients/form"));
         verify(mockUnitOfMeasureService).findAll();
     }
@@ -118,7 +121,7 @@ class IngredientControllerTest {
         ingredientDTO.setId("3");
 
         // when
-        when(mockIngredientService.saveIngredientOnRecipe(anyString(), any())).thenReturn(ingredientDTO);
+        when(mockIngredientService.saveIngredientOnRecipe(anyString(), any())).thenReturn(Mono.just(ingredientDTO));
 
         // then
         mockMvc.perform(post("/recipes/2/ingredients")

@@ -12,10 +12,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @DataMongoTest
-class UnitOfMeasureReactiveRepositoryTest {
+class UnitOfMeasureReactiveRepositoryIT {
 
     public static final String UOM_ASTRONOMICAL_UNIT_NAME = "Astronomical Unit";
     public static final String UOM_ASTRONOMICAL_UNIT_UNIT = "au";
+
     @Autowired
     UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
     private UnitOfMeasure unitOfMeasure;

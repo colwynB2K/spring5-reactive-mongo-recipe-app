@@ -30,7 +30,7 @@ class RecipeRepositoryServiceImplTest {
     private RecipeMapper mockRecipeMapper;
 
     @InjectMocks
-    private RecipeRepositoryServiceImpl recipeRepositoryService;
+    private RecipeRepositoryServiceImpl recipeRepositoryServiceImpl;
 
     private Recipe recipe;
     private RecipeDTO recipeDTO;
@@ -53,7 +53,7 @@ class RecipeRepositoryServiceImplTest {
         when(mockRecipeRepository.findAll()).thenReturn(expectedRecipes);
 
         // when
-        Set<RecipeDTO> actualRecipes = recipeRepositoryService.findAll();                  // When calling the findAll() method on the recipeRepositoryServiceImpl (object under test)
+        Set<RecipeDTO> actualRecipes = recipeRepositoryServiceImpl.findAll();                  // When calling the findAll() method on the recipeRepositoryServiceImpl (object under test)
 
         // then
         verify(mockRecipeRepository, times(1)).findAll();   // Verify that the findAll() method on the (mocked) repository was called precisely 1 time
@@ -67,7 +67,7 @@ class RecipeRepositoryServiceImplTest {
         when(mockRecipeMapper.toDTO(any(Recipe.class))).thenReturn(recipeDTO);
 
         // when
-        RecipeDTO actualRecipe = recipeRepositoryService.findById(ID);
+        RecipeDTO actualRecipe = recipeRepositoryServiceImpl.findById(ID);
 
         // then
         assertNotNull(actualRecipe);
@@ -80,7 +80,7 @@ class RecipeRepositoryServiceImplTest {
         when(mockRecipeRepository.findById(anyString())).thenReturn(java.util.Optional.empty());
 
         // when
-        ObjectNotFoundException e = assertThrows(ObjectNotFoundException.class, () -> recipeRepositoryService.findById(ID));
+        ObjectNotFoundException e = assertThrows(ObjectNotFoundException.class, () -> recipeRepositoryServiceImpl.findById(ID));
 
         // then
         assertEquals("No Recipe found for id: " + ID, e.getMessage());
@@ -91,7 +91,7 @@ class RecipeRepositoryServiceImplTest {
         // no 'when' statement for the mockRecipeRepository, since the delete method has void return type
 
         // when
-        recipeRepositoryService.deleteById(ID);
+        recipeRepositoryServiceImpl.deleteById(ID);
 
         // then
         verify(mockRecipeRepository).deleteById(ID);

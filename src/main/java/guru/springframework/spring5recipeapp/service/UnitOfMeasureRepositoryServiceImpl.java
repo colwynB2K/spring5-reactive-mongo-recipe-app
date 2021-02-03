@@ -1,50 +1,40 @@
 package guru.springframework.spring5recipeapp.service;
 
-import guru.springframework.spring5recipeapp.domain.UnitOfMeasure;
 import guru.springframework.spring5recipeapp.dto.UnitOfMeasureDTO;
-import guru.springframework.spring5recipeapp.exception.ObjectNotFoundException;
 import guru.springframework.spring5recipeapp.mapper.UnitOfMeasureMapper;
-import guru.springframework.spring5recipeapp.repository.UnitOfMeasureRepository;
+import guru.springframework.spring5recipeapp.repository.reactive.UnitOfMeasureReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
 public class UnitOfMeasureRepositoryServiceImpl implements UnitOfMeasureService {
 
-    private final UnitOfMeasureRepository unitOfMeasureRepository;
+    private final UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
     private final UnitOfMeasureMapper unitOfMeasureMapper;
 
     @Autowired
-    public UnitOfMeasureRepositoryServiceImpl(UnitOfMeasureRepository unitOfMeasureRepository,
+    public UnitOfMeasureRepositoryServiceImpl(UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository,
                                               UnitOfMeasureMapper unitOfMeasureMapper) {
-        this.unitOfMeasureRepository = unitOfMeasureRepository;
+        this.unitOfMeasureReactiveRepository = unitOfMeasureReactiveRepository;
         this.unitOfMeasureMapper = unitOfMeasureMapper;
     }
 
     @Override
-    public UnitOfMeasureDTO getUOMByName(String name) {
-        UnitOfMeasure unitOfMeasure = unitOfMeasureRepository.findByName(name).orElseThrow(() -> new ObjectNotFoundException("UOM " + name + " not found!"));
-
-        return unitOfMeasureMapper.toDTO(unitOfMeasure);
+    public Mono<UnitOfMeasureDTO> getUOMByName(String name) {
+        return unitOfMeasureReactiveRepository.findByName(name).map(unitOfMeasureMapper::toDTO);
     }
 
     @Override
-    public Set<UnitOfMeasureDTO> findAll() {
-      return StreamSupport.stream(unitOfMeasureRepository.findAll().spliterator(), false)
-                        .map(unitOfMeasureMapper::toDTO)
-                        .collect(Collectors.toSet());
+    public Flux<UnitOfMeasureDTO> findAll() {
+      return unitOfMeasureReactiveRepository.findAll().map(unitOfMeasureMapper::toDTO);
     }
 
     @Override
-    public UnitOfMeasureDTO findById(String id) {
-        UnitOfMeasure unitOfMeasure = unitOfMeasureRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("No UOM found for id '" + id  + "'"));
-
-        return unitOfMeasureMapper.toDTO(unitOfMeasure);
+    public Mono<UnitOfMeasureDTO> findById(String id) {
+        return unitOfMeasureReactiveRepository.findById(id).map(unitOfMeasureMapper::toDTO);
     }
 }

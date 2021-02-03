@@ -4,9 +4,6 @@ import guru.springframework.spring5recipeapp.domain.*;
 
 import guru.springframework.spring5recipeapp.repository.CategoryRepository;
 import guru.springframework.spring5recipeapp.repository.RecipeRepository;
-import guru.springframework.spring5recipeapp.repository.UnitOfMeasureRepository;
-import guru.springframework.spring5recipeapp.repository.reactive.CategoryReactiveRepository;
-import guru.springframework.spring5recipeapp.repository.reactive.RecipeReactiveRepository;
 import guru.springframework.spring5recipeapp.repository.reactive.UnitOfMeasureReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +25,12 @@ public class DataInitializer implements ApplicationListener<ContextRefreshedEven
 
     private final CategoryRepository categoryRepository;
     private final RecipeRepository recipeRepository;
-    private final UnitOfMeasureRepository unitOfMeasureRepository;
+    private final UnitOfMeasureReactiveRepository unitOfMeasureRepository;
 
     @Autowired
     public DataInitializer(CategoryRepository categoryRepository,
                            RecipeRepository recipeRepository,
-                           UnitOfMeasureRepository unitOfMeasureRepository) {
+                           UnitOfMeasureReactiveRepository unitOfMeasureRepository) {
         this.categoryRepository = categoryRepository;
         this.recipeRepository = recipeRepository;
         this.unitOfMeasureRepository = unitOfMeasureRepository;
@@ -74,57 +71,57 @@ public class DataInitializer implements ApplicationListener<ContextRefreshedEven
         UnitOfMeasure uom1 = new UnitOfMeasure();
         uom1.setName("Cup");
         uom1.setUnit("Cup");
-        unitOfMeasureRepository.save(uom1);
+        unitOfMeasureRepository.save(uom1).block();
 
         UnitOfMeasure uom2 = new UnitOfMeasure();
         uom2.setName("Dash");
         uom2.setUnit("Dash");
-        unitOfMeasureRepository.save(uom2);
+        unitOfMeasureRepository.save(uom2).block();
 
         UnitOfMeasure uom3 = new UnitOfMeasure();
         uom3.setName("Drop");
         uom3.setUnit("Drop");
-        unitOfMeasureRepository.save(uom3);
+        unitOfMeasureRepository.save(uom3).block();
 
         UnitOfMeasure uom4 = new UnitOfMeasure();
         uom4.setName("Gram");
         uom4.setUnit("g");
-        unitOfMeasureRepository.save(uom4);
+        unitOfMeasureRepository.save(uom4).block();
 
         UnitOfMeasure uom5 = new UnitOfMeasure();
         uom5.setName("Kilogram");
         uom5.setUnit("kg");
-        unitOfMeasureRepository.save(uom5);
+        unitOfMeasureRepository.save(uom5).block();
 
         UnitOfMeasure uom6 = new UnitOfMeasure();
         uom6.setName("Milliliter");
         uom6.setUnit("ml");
-        unitOfMeasureRepository.save(uom6);
+        unitOfMeasureRepository.save(uom6).block();
 
         UnitOfMeasure uom7 = new UnitOfMeasure();
         uom7.setName("Liter");
         uom7.setUnit("l");
-        unitOfMeasureRepository.save(uom7);
+        unitOfMeasureRepository.save(uom7).block();
 
         UnitOfMeasure uom8 = new UnitOfMeasure();
         uom8.setName("Ounce");
         uom8.setUnit("oz");
-        unitOfMeasureRepository.save(uom8);
+        unitOfMeasureRepository.save(uom8).block();
 
         UnitOfMeasure uom9 = new UnitOfMeasure();
         uom9.setName("Pinch");
         uom9.setUnit("Pinch");
-        unitOfMeasureRepository.save(uom9);
+        unitOfMeasureRepository.save(uom9).block();
 
         UnitOfMeasure uom10 = new UnitOfMeasure();
         uom10.setName("Tablespoon");
         uom10.setUnit("Tablespoon");
-        unitOfMeasureRepository.save(uom10);
+        unitOfMeasureRepository.save(uom10).block();
 
         UnitOfMeasure uom11 = new UnitOfMeasure();
         uom11.setName("Teaspoon");
         uom11.setUnit("Teaspoon");
-        unitOfMeasureRepository.save(uom11);
+        unitOfMeasureRepository.save(uom11).block();
     }
 
     private List<Recipe> getRecipes() {
@@ -267,7 +264,7 @@ public class DataInitializer implements ApplicationListener<ContextRefreshedEven
     }
 
     private UnitOfMeasure getUnitOfMeasureByName(String name) {
-        return unitOfMeasureRepository.findByUnit(name).get();
+        return unitOfMeasureRepository.findByUnit(name).block();
     }
 
     private Category getCategoryByName(String name) {

@@ -42,22 +42,22 @@ public class IngredientController {
         recipeDTO.setId(recipeId);
         ingredientDTO.setRecipe(recipeDTO);
         model.addAttribute("ingredient", ingredientDTO);
-        model.addAttribute("uomList", unitOfMeasureService.findAll());
+        model.addAttribute("uomList", unitOfMeasureService.findAll().collectList().block());
 
         return "recipes/ingredients/form";
     }
 
     @GetMapping("/recipes/{recipeId}/ingredients/{ingredientId}")
     public String showIngredientForRecipe(@PathVariable String ingredientId, Model model) {
-        model.addAttribute("ingredient", ingredientService.findById(ingredientId));
-        model.addAttribute("uomList", unitOfMeasureService.findAll());
+        model.addAttribute("ingredient", ingredientService.findById(ingredientId).block());
+        model.addAttribute("uomList", unitOfMeasureService.findAll().collectList().block());
 
         return "recipes/ingredients/form";
     }
 
     @PostMapping("/recipes/{recipeId}/ingredients")
     public String save(@PathVariable String recipeId, @ModelAttribute IngredientDTO ingredientDTO) {              // The incoming uomDTO will only contain an id from the form select box here
-        IngredientDTO savedIngredientDTO = ingredientService.saveIngredientOnRecipe(recipeId, ingredientDTO);
+        IngredientDTO savedIngredientDTO = ingredientService.saveIngredientOnRecipe(recipeId, ingredientDTO).block();
 
         return "redirect:/recipes/" + recipeId + "/ingredients/" + savedIngredientDTO.getId();
     }
