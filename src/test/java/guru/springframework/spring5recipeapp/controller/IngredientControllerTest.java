@@ -134,9 +134,15 @@ class IngredientControllerTest {
 
     @Test
     void deleteIngredientFromRecipe() throws Exception {
+        // given
+        when(mockIngredientService.deleteById(anyString())).thenReturn(Mono.empty());               // By adding .block() in the delete method of the controller, we need to make sure the delete method of the service returns a Mono<Void> or we get an NPE there
+
+        // when
         mockMvc.perform(get("/recipes/2/ingredients/8/delete"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/recipes/2/ingredients"));
+
+        // then
         verify(mockIngredientService).deleteById(anyString());
     }
 }
