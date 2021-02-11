@@ -16,8 +16,6 @@ public class Ingredient {
     private String id = UUID.randomUUID().toString();
     private BigDecimal amount;
     private String name;
-
-    @DBRef
     private UnitOfMeasure unitOfMeasure;
     //private Recipe recipe;                // Commented out this bidirectional reference
 

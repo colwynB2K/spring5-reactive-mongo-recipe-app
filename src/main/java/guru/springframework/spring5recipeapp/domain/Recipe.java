@@ -31,7 +31,6 @@ public class Recipe {
     private String url;
     private String yield;
 
-    @DBRef
     private List<Category> categories = new ArrayList<>();
     private List<Ingredient> ingredients = new ArrayList<>();
     private Notes notes;
