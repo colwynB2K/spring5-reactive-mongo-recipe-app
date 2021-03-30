@@ -19,6 +19,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.HashSet;
@@ -50,8 +51,8 @@ class RecipeControllerTest {
     MockMvc mockMvc;
 
     private RecipeDTO recipeDTO;
-    private final Set<RecipeDTO> recipeDTOs = new HashSet<>();
-    private final Set<CategoryDTO> categoryDTOs = new HashSet<>();
+    private Flux<RecipeDTO> recipeDTOs;
+    private Flux<CategoryDTO> categoryDTOs;
     private static final String ID = "1";
 
     @BeforeEach
@@ -63,10 +64,10 @@ class RecipeControllerTest {
         recipeDTO = new RecipeDTO();
         recipeDTO.setId(ID);
         recipeDTO.setName("Spreddel");
-        recipeDTOs.add(recipeDTO);
+        recipeDTOs = Flux.just(recipeDTO);
 
         CategoryDTO categoryDTO = new CategoryDTO();
-        categoryDTOs.add(categoryDTO);
+        categoryDTOs = Flux.just(categoryDTO);
     }
 
     @Test

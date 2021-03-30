@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class IngredientServiceImplTest {
+class IngredientRepositoryServiceImplTest {
 
     @Mock
     private IngredientReactiveRepository mockIngredientReactiveRepository;
@@ -42,7 +42,7 @@ class IngredientServiceImplTest {
     IngredientMapper mockIngredientMapper;
 
     @InjectMocks
-    private IngredientServiceImpl ingredientServiceImpl;
+    private IngredientRepositoryServiceImpl ingredientRepositoryServiceImpl;
 
     private Ingredient ingredient;
     private IngredientDTO ingredientDTO;
@@ -75,7 +75,7 @@ class IngredientServiceImplTest {
         // when
         when(mockIngredientReactiveRepository.findById(ingredientId)).thenReturn(Mono.just(ingredient));
         when(mockIngredientMapper.toDTO(ingredient)).thenReturn(ingredientDTO);
-        IngredientDTO actualIngredientDTO = ingredientServiceImpl.findById(ingredientId).block();
+        IngredientDTO actualIngredientDTO = ingredientRepositoryServiceImpl.findById(ingredientId).block();
 
         verify(mockIngredientReactiveRepository).findById(ingredientId);
         verify(mockIngredientMapper).toDTO(ingredient);
@@ -109,7 +109,7 @@ class IngredientServiceImplTest {
         when(mockRecipeReactiveRepository.save(any(Recipe.class))).thenReturn(Mono.just(recipe));
 
         // when
-        IngredientDTO actualSavedIngredientDTO = ingredientServiceImpl.saveIngredientOnRecipe(recipeId, ingredientDTO).block();
+        IngredientDTO actualSavedIngredientDTO = ingredientRepositoryServiceImpl.saveIngredientOnRecipe(recipeId, ingredientDTO).block();
 
         // then
         assertEquals(savedIngredient.getName(), actualSavedIngredientDTO.getName());

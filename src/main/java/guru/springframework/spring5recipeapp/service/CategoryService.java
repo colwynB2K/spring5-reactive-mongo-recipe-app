@@ -1,12 +1,12 @@
 package guru.springframework.spring5recipeapp.service;
 
 import guru.springframework.spring5recipeapp.dto.CategoryDTO;
-
-import java.util.Set;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface CategoryService {
 
-    CategoryDTO getCategoryByName(String name);
+    Mono<CategoryDTO> getCategoryByName(String name);
 
-    Set<CategoryDTO> findAll();
+    Flux<CategoryDTO> findAll();
 }

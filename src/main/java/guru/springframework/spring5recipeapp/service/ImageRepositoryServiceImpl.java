@@ -1,9 +1,6 @@
 package guru.springframework.spring5recipeapp.service;
 
 import guru.springframework.spring5recipeapp.domain.Recipe;
-import guru.springframework.spring5recipeapp.dto.RecipeDTO;
-import guru.springframework.spring5recipeapp.mapper.RecipeMapper;
-import guru.springframework.spring5recipeapp.repository.RecipeRepository;
 import guru.springframework.spring5recipeapp.repository.reactive.RecipeReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
@@ -16,15 +13,13 @@ import java.io.IOException;
 
 @Service
 @Slf4j
-public class ImageServiceImpl implements ImageService {
+public class ImageRepositoryServiceImpl implements ImageService {
 
     private RecipeReactiveRepository recipeRepository;
-    private RecipeMapper recipeMapper;
 
     @Autowired
-    public ImageServiceImpl(RecipeReactiveRepository recipeRepository, RecipeMapper recipeMapper) {
+    public ImageRepositoryServiceImpl(RecipeReactiveRepository recipeRepository) {
         this.recipeRepository = recipeRepository;
-        this.recipeMapper = recipeMapper;
     }
 
     @Override

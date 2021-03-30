@@ -1,9 +1,7 @@
 package guru.springframework.spring5recipeapp.service;
 
 import guru.springframework.spring5recipeapp.domain.Recipe;
-import guru.springframework.spring5recipeapp.dto.RecipeDTO;
 import guru.springframework.spring5recipeapp.mapper.RecipeMapper;
-import guru.springframework.spring5recipeapp.repository.RecipeRepository;
 import guru.springframework.spring5recipeapp.repository.reactive.RecipeReactiveRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ImageServiceImplTest {
+class ImageRepositoryServiceImplTest {
 
     @Mock
     RecipeReactiveRepository mockRecipeRepository;
@@ -31,7 +29,7 @@ class ImageServiceImplTest {
     RecipeMapper mockRecipeMapper;
 
     @InjectMocks
-    private ImageServiceImpl imageServiceImpl;
+    private ImageRepositoryServiceImpl imageRepositoryServiceImpl;
 
     private String recipeId = "1";
 
@@ -52,7 +50,7 @@ class ImageServiceImplTest {
         // when
         when(mockRecipeRepository.findById(anyString())).thenReturn(Mono.just(recipe));
         ArgumentCaptor<Recipe> argumentCaptor = ArgumentCaptor.forClass(Recipe.class);
-        imageServiceImpl.saveOnRecipe(recipeId, mockMultipartFile);
+        imageRepositoryServiceImpl.saveOnRecipe(recipeId, mockMultipartFile);
 
         // then
         verify(mockRecipeRepository).save(argumentCaptor.capture());

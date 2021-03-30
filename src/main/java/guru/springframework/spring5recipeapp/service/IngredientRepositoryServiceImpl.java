@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
-public class IngredientServiceImpl implements IngredientService {
+public class IngredientRepositoryServiceImpl implements IngredientService {
 
     private final IngredientReactiveRepository ingredientReactiveRepository;
     private final RecipeReactiveRepository recipeReactiveRepository;
@@ -26,10 +26,10 @@ public class IngredientServiceImpl implements IngredientService {
     private final UnitOfMeasureMapper unitOfMeasureMapper;
 
     @Autowired
-    public IngredientServiceImpl(IngredientReactiveRepository ingredientReactiveRepository,
-                                 RecipeReactiveRepository recipeReactiveRepository,
-                                 UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository,
-                                 RecipeMapper recipeMapper, IngredientMapper ingredientMapper, UnitOfMeasureMapper unitOfMeasureMapper) {
+    public IngredientRepositoryServiceImpl(IngredientReactiveRepository ingredientReactiveRepository,
+                                           RecipeReactiveRepository recipeReactiveRepository,
+                                           UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository,
+                                           RecipeMapper recipeMapper, IngredientMapper ingredientMapper, UnitOfMeasureMapper unitOfMeasureMapper) {
         this.ingredientReactiveRepository = ingredientReactiveRepository;
         this.recipeReactiveRepository = recipeReactiveRepository;
         this.unitOfMeasureReactiveRepository = unitOfMeasureReactiveRepository;
