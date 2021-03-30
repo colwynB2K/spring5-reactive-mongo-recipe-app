@@ -2,8 +2,8 @@ package guru.springframework.spring5recipeapp.bootstrap;
 
 import guru.springframework.spring5recipeapp.domain.*;
 
-import guru.springframework.spring5recipeapp.repository.CategoryRepository;
-import guru.springframework.spring5recipeapp.repository.RecipeRepository;
+import guru.springframework.spring5recipeapp.repository.reactive.CategoryReactiveRepository;
+import guru.springframework.spring5recipeapp.repository.reactive.RecipeReactiveRepository;
 import guru.springframework.spring5recipeapp.repository.reactive.UnitOfMeasureReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +23,13 @@ import java.util.List;
 @Profile("default")
 public class DataInitializer implements ApplicationListener<ContextRefreshedEvent> {
 
-    private final CategoryRepository categoryRepository;
-    private final RecipeRepository recipeRepository;
+    private final CategoryReactiveRepository categoryRepository;
+    private final RecipeReactiveRepository recipeRepository;
     private final UnitOfMeasureReactiveRepository unitOfMeasureRepository;
 
     @Autowired
-    public DataInitializer(CategoryRepository categoryRepository,
-                           RecipeRepository recipeRepository,
+    public DataInitializer(CategoryReactiveRepository categoryRepository,
+                           RecipeReactiveRepository recipeRepository,
                            UnitOfMeasureReactiveRepository unitOfMeasureRepository) {
         this.categoryRepository = categoryRepository;
         this.recipeRepository = recipeRepository;
@@ -48,23 +48,23 @@ public class DataInitializer implements ApplicationListener<ContextRefreshedEven
     private void loadCategories(){
         Category cat1 = new Category();
         cat1.setName("American");
-        categoryRepository.save(cat1);
+        categoryRepository.save(cat1).block();
 
         Category cat2 = new Category();
         cat2.setName("Fast Food");
-        categoryRepository.save(cat2);
+        categoryRepository.save(cat2).block();
 
         Category cat3 = new Category();
         cat3.setName("Good Belgian Cooking");
-        categoryRepository.save(cat3);
+        categoryRepository.save(cat3).block();
 
         Category cat4 = new Category();
         cat4.setName("Fast Italian");
-        categoryRepository.save(cat4);
+        categoryRepository.save(cat4).block();
 
         Category cat5 = new Category();
         cat5.setName("Mexican");
-        categoryRepository.save(cat5);
+        categoryRepository.save(cat5).block();
     }
 
     private void loadUom(){
@@ -268,7 +268,7 @@ public class DataInitializer implements ApplicationListener<ContextRefreshedEven
     }
 
     private Category getCategoryByName(String name) {
-        return categoryRepository.findByName(name).get();
+        return categoryRepository.findByName(name).block();
     }
 
 

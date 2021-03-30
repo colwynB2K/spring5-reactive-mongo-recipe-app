@@ -1,16 +1,16 @@
 package guru.springframework.spring5recipeapp.service;
 
 import guru.springframework.spring5recipeapp.dto.RecipeDTO;
-
-import java.util.Set;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface RecipeService {
 
-    Set<RecipeDTO> findAll();
+    Flux<RecipeDTO> findAll();
 
-    RecipeDTO findById(String id);
+    Mono<RecipeDTO> findById(String id);
 
-    RecipeDTO save(RecipeDTO recipeDTO);
+    Mono<RecipeDTO> save(RecipeDTO recipeDTO);
 
-    void deleteById(String id);
+    Mono<Void> deleteById(String id);
 }

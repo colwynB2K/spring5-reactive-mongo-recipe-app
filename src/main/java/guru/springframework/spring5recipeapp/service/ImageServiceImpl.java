@@ -4,11 +4,13 @@ import guru.springframework.spring5recipeapp.domain.Recipe;
 import guru.springframework.spring5recipeapp.dto.RecipeDTO;
 import guru.springframework.spring5recipeapp.mapper.RecipeMapper;
 import guru.springframework.spring5recipeapp.repository.RecipeRepository;
+import guru.springframework.spring5recipeapp.repository.reactive.RecipeReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 
@@ -16,24 +18,20 @@ import java.io.IOException;
 @Slf4j
 public class ImageServiceImpl implements ImageService {
 
-    private RecipeService recipeService;
-    private RecipeRepository recipeRepository;
+    private RecipeReactiveRepository recipeRepository;
     private RecipeMapper recipeMapper;
 
     @Autowired
-    public ImageServiceImpl(RecipeService recipeService, RecipeRepository recipeRepository, RecipeMapper recipeMapper) {
-        this.recipeService = recipeService;
+    public ImageServiceImpl(RecipeReactiveRepository recipeRepository, RecipeMapper recipeMapper) {
         this.recipeRepository = recipeRepository;
         this.recipeMapper = recipeMapper;
     }
 
     @Override
-    public void saveOnRecipe(String recipeId, MultipartFile file) {
+    public Mono<Void> saveOnRecipe(String recipeId, MultipartFile file) {
         log.debug("Received file: " + file.getName());
 
-        RecipeDTO recipeDTO = recipeService.findById(recipeId);
-        Recipe recipe = recipeMapper.toEntity(recipeDTO);
-
+        Recipe recipe = recipeRepository.findById(recipeId).block();
         try {
             recipe.setImage(ArrayUtils.toObject(file.getBytes())); // Convert from byte[] to Byte[] and set it on the Recipe before saving it
         } catch (IOException e) {
@@ -42,5 +40,7 @@ public class ImageServiceImpl implements ImageService {
         }
 
         recipeRepository.save(recipe);
+
+        return Mono.empty();
     }
 }

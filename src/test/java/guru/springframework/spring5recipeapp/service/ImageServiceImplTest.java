@@ -4,6 +4,7 @@ import guru.springframework.spring5recipeapp.domain.Recipe;
 import guru.springframework.spring5recipeapp.dto.RecipeDTO;
 import guru.springframework.spring5recipeapp.mapper.RecipeMapper;
 import guru.springframework.spring5recipeapp.repository.RecipeRepository;
+import guru.springframework.spring5recipeapp.repository.reactive.RecipeReactiveRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
@@ -23,10 +25,7 @@ import static org.mockito.Mockito.when;
 class ImageServiceImplTest {
 
     @Mock
-    RecipeRepository mockRecipeRepository;
-
-    @Mock
-    RecipeService mockRecipeService;
+    RecipeReactiveRepository mockRecipeRepository;
 
     @Mock
     RecipeMapper mockRecipeMapper;
@@ -48,13 +47,10 @@ class ImageServiceImplTest {
                 "text/plain", "Spring Framework Guru".getBytes());
 
         Recipe recipe = new Recipe();
-
-        RecipeDTO recipeDTO = new RecipeDTO();
-        recipeDTO.setId(recipeId);
+        recipe.setId(recipeId);
 
         // when
-        when(mockRecipeService.findById(anyString())).thenReturn(recipeDTO);
-        when(mockRecipeMapper.toEntity(any(RecipeDTO.class))).thenReturn(recipe);
+        when(mockRecipeRepository.findById(anyString())).thenReturn(Mono.just(recipe));
         ArgumentCaptor<Recipe> argumentCaptor = ArgumentCaptor.forClass(Recipe.class);
         imageServiceImpl.saveOnRecipe(recipeId, mockMultipartFile);
 

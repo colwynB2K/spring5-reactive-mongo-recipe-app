@@ -2,57 +2,46 @@ package guru.springframework.spring5recipeapp.service;
 
 import guru.springframework.spring5recipeapp.domain.Recipe;
 import guru.springframework.spring5recipeapp.dto.RecipeDTO;
-import guru.springframework.spring5recipeapp.exception.ObjectNotFoundException;
 import guru.springframework.spring5recipeapp.mapper.RecipeMapper;
-import guru.springframework.spring5recipeapp.repository.RecipeRepository;
+import guru.springframework.spring5recipeapp.repository.reactive.RecipeReactiveRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.Set;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 @Slf4j
 public class RecipeRepositoryServiceImpl implements RecipeService {
 
-    private final RecipeRepository recipeRepository;
+    private final RecipeReactiveRepository recipeRepository;
     private final RecipeMapper recipeMapper;
 
     @Autowired
-    public RecipeRepositoryServiceImpl(RecipeRepository recipeRepository, RecipeMapper recipeMapper) {
+    public RecipeRepositoryServiceImpl(RecipeReactiveRepository recipeRepository, RecipeMapper recipeMapper) {
         this.recipeRepository = recipeRepository;
         this.recipeMapper = recipeMapper;
     }
 
     @Override
-    public Set<RecipeDTO> findAll() {
-        Set<RecipeDTO> recipes = new HashSet<>();
-        recipeRepository.findAll()
-                .iterator()
-                .forEachRemaining(recipe -> recipes.add(recipeMapper.toDTO(recipe)));
-
-        return recipes;
+    public Flux<RecipeDTO> findAll() {
+        return recipeRepository.findAll().map(recipeMapper::toDTO);
     }
 
     @Override
-    public RecipeDTO findById(String id) {
-        Recipe recipe = recipeRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("No Recipe found for id: " + id + ""));
-
-        return recipeMapper.toDTO(recipe);
+    public Mono<RecipeDTO> findById(String id) {
+        return recipeRepository.findById(id).map(recipeMapper::toDTO);
     }
 
     @Override
-    public RecipeDTO save(RecipeDTO recipeDTO) {
+    public Mono<RecipeDTO> save(RecipeDTO recipeDTO) {
         Recipe recipe = recipeMapper.toEntity(recipeDTO);
 
-        Recipe savedRecipe = recipeRepository.save(recipe);
-
-        return recipeMapper.toDTO(savedRecipe);
+        return recipeRepository.save(recipe).map(recipeMapper::toDTO);
     }
 
     @Override
-    public void deleteById(String id) {
-        recipeRepository.deleteById(id);
+    public Mono<Void> deleteById(String id) {
+        return recipeRepository.deleteById(id);
     }
 }

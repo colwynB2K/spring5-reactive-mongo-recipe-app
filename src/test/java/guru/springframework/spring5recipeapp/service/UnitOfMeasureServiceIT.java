@@ -2,8 +2,8 @@ package guru.springframework.spring5recipeapp.service;
 
 import guru.springframework.spring5recipeapp.bootstrap.DataInitializer;
 import guru.springframework.spring5recipeapp.domain.UnitOfMeasure;
-import guru.springframework.spring5recipeapp.repository.CategoryRepository;
-import guru.springframework.spring5recipeapp.repository.RecipeRepository;
+import guru.springframework.spring5recipeapp.repository.reactive.CategoryReactiveRepository;
+import guru.springframework.spring5recipeapp.repository.reactive.RecipeReactiveRepository;
 import guru.springframework.spring5recipeapp.repository.reactive.UnitOfMeasureReactiveRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,9 +24,9 @@ class UnitOfMeasureServiceIT {
     @Autowired
     private UnitOfMeasureReactiveRepository unitOfMeasureRepository;                                    // Because we are wiring in the actual bean and not a mock and calling the real persistence layer this is an integration test
     @Autowired
-    private CategoryRepository categoryRepository;
+    private CategoryReactiveRepository categoryRepository;
     @Autowired
-    private RecipeRepository recipeRepository;
+    private RecipeReactiveRepository recipeRepository;
 
     @BeforeEach
     public void setUp() {

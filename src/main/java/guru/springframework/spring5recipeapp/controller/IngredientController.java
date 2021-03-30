@@ -2,6 +2,7 @@ package guru.springframework.spring5recipeapp.controller;
 
 import guru.springframework.spring5recipeapp.dto.IngredientDTO;
 import guru.springframework.spring5recipeapp.dto.RecipeDTO;
+import guru.springframework.spring5recipeapp.dto.UnitOfMeasureDTO;
 import guru.springframework.spring5recipeapp.service.IngredientService;
 import guru.springframework.spring5recipeapp.service.RecipeService;
 import guru.springframework.spring5recipeapp.service.UnitOfMeasureService;
@@ -30,7 +31,7 @@ public class IngredientController {
 
     @GetMapping("/recipes/{recipeId}/ingredients")
     public String showListForRecipe(@PathVariable String recipeId, Model model) {
-        model.addAttribute("recipe", recipeService.findById(recipeId));
+        model.addAttribute("recipe", recipeService.findById(recipeId).block());
 
         return "recipes/ingredients/list";
     }

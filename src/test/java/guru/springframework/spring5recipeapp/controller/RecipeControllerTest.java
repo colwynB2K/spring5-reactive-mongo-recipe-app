@@ -19,6 +19,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -71,7 +72,7 @@ class RecipeControllerTest {
     @Test
     void showRecipeDetail() throws Exception {
         // given
-        when(mockRecipeService.findById(ID)).thenReturn(recipeDTO);
+        when(mockRecipeService.findById(anyString())).thenReturn(Mono.just(recipeDTO));
 
         // whwn
         mockMvc.perform(get("/recipes/" + ID))
@@ -97,7 +98,7 @@ class RecipeControllerTest {
     @Test
     void showRecipeForm_For_Specified_Recipe_Id() throws Exception {
         // given
-        when(mockRecipeService.findById(ID)).thenReturn(recipeDTO);
+        when(mockRecipeService.findById(anyString())).thenReturn(Mono.just(recipeDTO));
         when(mockCategoryService.findAll()).thenReturn(categoryDTOs);
 
         // when
@@ -131,7 +132,7 @@ class RecipeControllerTest {
     @Test
     void saveRecipe() throws Exception {
         // given
-        when(mockRecipeService.save(any(RecipeDTO.class))).thenReturn(recipeDTO);
+        when(mockRecipeService.save(any(RecipeDTO.class))).thenReturn(Mono.just(recipeDTO));
 
         // when
         mockMvc.perform(
@@ -173,8 +174,10 @@ class RecipeControllerTest {
 
     @Test
     void showImageForm() throws Exception {
+        // given
+        when(mockRecipeService.findById(anyString())).thenReturn(Mono.just(recipeDTO));
+
         // when
-        when(mockRecipeService.findById(anyString())).thenReturn(recipeDTO);
 
         // then
         mockMvc.perform(get("/recipes/1/image/edit"))
@@ -206,7 +209,8 @@ class RecipeControllerTest {
         String recipeId = "1";
         String s = "fake Image content";
         recipeDTO.setImage(ArrayUtils.toObject(s.getBytes()));
-        when(mockRecipeService.findById(recipeId)).thenReturn(recipeDTO);
+
+        when(mockRecipeService.findById(anyString())).thenReturn(Mono.just(recipeDTO));
 
         // when
         MockHttpServletResponse response = mockMvc.perform(get("/recipes/" + recipeId + "/image"))

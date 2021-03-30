@@ -35,6 +35,7 @@ public class RecipeController {
     public static final String VIEWS_RECIPES_IMAGES_FORM = "recipes/images/form";
     public static final String VIEWS_RECIPES_REDIRECT = "redirect:/recipes/";
     public static final String VIEWS_ROOT_REDIRECT = "redirect:/";
+    public static final String RECIPE_ATTRIBUTE_NAME = "recipe";
 
     private final CategoryService categoryService;
     private final RecipeService recipeService;
@@ -49,7 +50,7 @@ public class RecipeController {
 
     @GetMapping("/{recipeId}")
     public String showRecipeDetail(@PathVariable String recipeId, Model model) {
-        model.addAttribute("recipe", recipeService.findById(recipeId));
+        model.addAttribute(RECIPE_ATTRIBUTE_NAME, recipeService.findById(recipeId).block());
 
         return VIEWS_RECIPES_DETAIL;
     }
@@ -57,9 +58,9 @@ public class RecipeController {
     @GetMapping({"/edit", "/edit/{recipeId}"})
     public String showRecipeForm(@PathVariable(required = false) String recipeId, Model model) {
         if (recipeId != null) {
-            model.addAttribute("recipe", recipeService.findById(recipeId));
+            model.addAttribute(RECIPE_ATTRIBUTE_NAME, recipeService.findById(recipeId).block());
         } else {
-            model.addAttribute("recipe", new RecipeDTO());
+            model.addAttribute(RECIPE_ATTRIBUTE_NAME, new RecipeDTO());
         }
         model.addAttribute("categories", categoryService.findAll());
 
@@ -76,7 +77,7 @@ public class RecipeController {
             return VIEWS_RECIPES_FORM;
         }
 
-        RecipeDTO savedRecipeDTO = recipeService.save(recipe);
+        RecipeDTO savedRecipeDTO = recipeService.save(recipe).block();
 
         return VIEWS_RECIPES_REDIRECT + savedRecipeDTO.getId(); // Use MVC redirect to redirect user to the Recipe Detail page (so the browser should load a new url here)
     }
@@ -90,7 +91,7 @@ public class RecipeController {
 
     @GetMapping("/{recipeId}/image/edit")
     public String showImageUploadForm(@PathVariable String recipeId, Model model) {
-        model.addAttribute("recipe", recipeService.findById(recipeId));
+        model.addAttribute(RECIPE_ATTRIBUTE_NAME, recipeService.findById(recipeId).block());
 
         return VIEWS_RECIPES_IMAGES_FORM;
     }
@@ -104,7 +105,7 @@ public class RecipeController {
 
     @GetMapping("/{recipeId}/image")
     public void showImage(@PathVariable String recipeId, HttpServletResponse response) throws IOException {
-        RecipeDTO recipeDTO = recipeService.findById(recipeId);
+        RecipeDTO recipeDTO = recipeService.findById(recipeId).block();
         byte[] bytes = ArrayUtils.toPrimitive(recipeDTO.getImage());    // Convert Byte[] to byte[]
 
         if (bytes != null) {

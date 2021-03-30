@@ -18,9 +18,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
@@ -48,6 +47,7 @@ class IngredientControllerTest {
 
     private String recipeId = "2";
     private Flux<UnitOfMeasureDTO> uomList;
+    private UnitOfMeasureDTO unitOfMeasureDTO = new UnitOfMeasureDTO();
 
     @BeforeEach
     void setUp() {
@@ -56,7 +56,6 @@ class IngredientControllerTest {
                 .build();
 
 
-        UnitOfMeasureDTO unitOfMeasureDTO = new UnitOfMeasureDTO();
         uomList = Flux.just(unitOfMeasureDTO);
     }
 
@@ -67,7 +66,7 @@ class IngredientControllerTest {
 
 
         // when
-        when(mockRecipeService.findById(anyString())).thenReturn(recipeDTO);
+        when(mockRecipeService.findById(anyString())).thenReturn(Mono.just(recipeDTO));
 
         // then
         mockMvc.perform(get("/recipes/1/ingredients"))
@@ -117,19 +116,36 @@ class IngredientControllerTest {
     @Test
     void save() throws Exception {
         // given
+        String ingredientId = "3";
+        String ingredientName = "Eye of noot";
+        String uomId = "666";
+
         IngredientDTO ingredientDTO = new IngredientDTO();
-        ingredientDTO.setId("3");
+        ingredientDTO.setId(ingredientId);
+        ingredientDTO.setName(ingredientName);
+
+        unitOfMeasureDTO.setId(uomId);
+        ingredientDTO.setUnitOfMeasure(unitOfMeasureDTO);
+
+        List<IngredientDTO> ingredients = new ArrayList<>();
+        ingredients.add(ingredientDTO);
+
+        RecipeDTO recipeDTO = new RecipeDTO();
+        recipeDTO.setId(recipeId);
+        recipeDTO.setIngredients(ingredients);
+
+        when(mockIngredientService.saveIngredientOnRecipe(anyString(), any(IngredientDTO.class))).thenReturn(Mono.just(ingredientDTO));
 
         // when
-        when(mockIngredientService.saveIngredientOnRecipe(anyString(), any())).thenReturn(Mono.just(ingredientDTO));
 
         // then
         mockMvc.perform(post("/recipes/2/ingredients")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("id", "3")
-                        .param("name", "Eye of noot")
+                        .param("id", ingredientId)
+                        .param("name", ingredientName)
+                        .param("uomid", uomId)
                     ).andExpect(status().is3xxRedirection())
-                    .andExpect(view().name("redirect:/recipes/2/ingredients/3"));
+                    .andExpect(view().name("redirect:/recipes/" + recipeId + "/ingredients/" + ingredientId));
     }
 
     @Test

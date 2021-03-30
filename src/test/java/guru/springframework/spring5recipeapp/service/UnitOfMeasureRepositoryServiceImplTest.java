@@ -63,10 +63,7 @@ class UnitOfMeasureRepositoryServiceImplTest {
 
         // then
         assertEquals(2, actualUomDTOs.size());
-        verify(mockUnitOfMeasureReactiveRepository, times( 1)).findAll();
+        verify(mockUnitOfMeasureReactiveRepository).findAll();
     }
 
-    @Test
-    void findById() {
-    }
 }

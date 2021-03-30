@@ -2,18 +2,18 @@ package guru.springframework.spring5recipeapp.service;
 
 import guru.springframework.spring5recipeapp.domain.Recipe;
 import guru.springframework.spring5recipeapp.dto.RecipeDTO;
-import guru.springframework.spring5recipeapp.exception.ObjectNotFoundException;
 import guru.springframework.spring5recipeapp.mapper.RecipeMapper;
-import guru.springframework.spring5recipeapp.repository.RecipeRepository;
+import guru.springframework.spring5recipeapp.repository.reactive.RecipeReactiveRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -24,7 +24,7 @@ class RecipeRepositoryServiceImplTest {
     private final static String ID = "1";
 
     @Mock
-    private RecipeRepository mockRecipeRepository;
+    private RecipeReactiveRepository mockRecipeReactiveRepository;
 
     @Mock
     private RecipeMapper mockRecipeMapper;
@@ -47,43 +47,29 @@ class RecipeRepositoryServiceImplTest {
     @Test
     void findAll() {
         // given
-        Set<Recipe> expectedRecipes = new HashSet<>();
-        expectedRecipes.add(new Recipe());
+        when(mockRecipeReactiveRepository.findAll()).thenReturn(Flux.just(recipe));
         when(mockRecipeMapper.toDTO(any(Recipe.class))).thenReturn(recipeDTO);
-        when(mockRecipeRepository.findAll()).thenReturn(expectedRecipes);
 
         // when
-        Set<RecipeDTO> actualRecipes = recipeRepositoryServiceImpl.findAll();                  // When calling the findAll() method on the recipeRepositoryServiceImpl (object under test)
+        List<RecipeDTO> actualRecipes = recipeRepositoryServiceImpl.findAll().collectList().block();                  // When calling the findAll() method on the recipeRepositoryServiceImpl (object under test)
 
         // then
-        verify(mockRecipeRepository, times(1)).findAll();   // Verify that the findAll() method on the (mocked) repository was called precisely 1 time
+        verify(mockRecipeReactiveRepository).findAll();   // Verify that the findAll() method on the (mocked) repository was called precisely 1 time
         assertEquals(actualRecipes.size(), 1);                                    // Assert that the resulting Recipe Set has only 1 Recipe in it
     }
 
     @Test
     void findById() {
         // given
-        when(mockRecipeRepository.findById(ID)).thenReturn(java.util.Optional.ofNullable(recipe));
+        when(mockRecipeReactiveRepository.findById(ID)).thenReturn(Mono.just(recipe));
         when(mockRecipeMapper.toDTO(any(Recipe.class))).thenReturn(recipeDTO);
 
         // when
-        RecipeDTO actualRecipe = recipeRepositoryServiceImpl.findById(ID);
+        RecipeDTO actualRecipe = recipeRepositoryServiceImpl.findById(ID).block();
 
         // then
         assertNotNull(actualRecipe);
-        verify(mockRecipeRepository).findById(ID);
-    }
-
-    @Test
-    void findById_Should_Throw_ObjectNotFoundException_For_Unknown_Id() {
-        // given
-        when(mockRecipeRepository.findById(anyString())).thenReturn(java.util.Optional.empty());
-
-        // when
-        ObjectNotFoundException e = assertThrows(ObjectNotFoundException.class, () -> recipeRepositoryServiceImpl.findById(ID));
-
-        // then
-        assertEquals("No Recipe found for id: " + ID, e.getMessage());
+        verify(mockRecipeReactiveRepository).findById(ID);
     }
 
     @Test
@@ -94,6 +80,6 @@ class RecipeRepositoryServiceImplTest {
         recipeRepositoryServiceImpl.deleteById(ID);
 
         // then
-        verify(mockRecipeRepository).deleteById(ID);
+        verify(mockRecipeReactiveRepository).deleteById(ID);
     }
 }

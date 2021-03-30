@@ -1,11 +1,15 @@
 package guru.springframework.spring5recipeapp.service;
 
 import guru.springframework.spring5recipeapp.domain.Ingredient;
+import guru.springframework.spring5recipeapp.domain.Recipe;
+import guru.springframework.spring5recipeapp.domain.UnitOfMeasure;
 import guru.springframework.spring5recipeapp.dto.IngredientDTO;
 import guru.springframework.spring5recipeapp.dto.RecipeDTO;
 import guru.springframework.spring5recipeapp.dto.UnitOfMeasureDTO;
 import guru.springframework.spring5recipeapp.mapper.IngredientMapper;
 import guru.springframework.spring5recipeapp.repository.reactive.IngredientReactiveRepository;
+import guru.springframework.spring5recipeapp.repository.reactive.RecipeReactiveRepository;
+import guru.springframework.spring5recipeapp.repository.reactive.UnitOfMeasureReactiveRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,13 +30,13 @@ import static org.mockito.Mockito.when;
 class IngredientServiceImplTest {
 
     @Mock
-    IngredientReactiveRepository mockIngredientRepository;
+    private IngredientReactiveRepository mockIngredientReactiveRepository;
 
     @Mock
-    private RecipeService mockRecipeService;
+    private RecipeReactiveRepository mockRecipeReactiveRepository;
 
     @Mock
-    private UnitOfMeasureService mockUnitOfMeasureService;
+    private UnitOfMeasureReactiveRepository mockUnitOfMeasureReactiveRepository;
 
     @Mock
     IngredientMapper mockIngredientMapper;
@@ -69,11 +73,11 @@ class IngredientServiceImplTest {
         recipeDTO.setIngredients(ingredientDTOs);
 
         // when
-        when(mockIngredientRepository.findById(ingredientId)).thenReturn(Mono.just(ingredient));
+        when(mockIngredientReactiveRepository.findById(ingredientId)).thenReturn(Mono.just(ingredient));
         when(mockIngredientMapper.toDTO(ingredient)).thenReturn(ingredientDTO);
         IngredientDTO actualIngredientDTO = ingredientServiceImpl.findById(ingredientId).block();
 
-        verify(mockIngredientRepository).findById(ingredientId);
+        verify(mockIngredientReactiveRepository).findById(ingredientId);
         verify(mockIngredientMapper).toDTO(ingredient);
         assertEquals(ingredientId, actualIngredientDTO.getId());
     }
@@ -81,25 +85,36 @@ class IngredientServiceImplTest {
     @Test
     void saveIngredientOnRecipe() {
         // given
+        UnitOfMeasure uom = new UnitOfMeasure();
+        uom.setId(uomId);
+
+        Ingredient savedIngredient = new Ingredient();
+        savedIngredient.setId(ingredientId);
+        savedIngredient.setName("TO_SAVE");
+        savedIngredient.setUnitOfMeasure(uom);
+
         UnitOfMeasureDTO uomDTO = new UnitOfMeasureDTO();
         uomDTO.setId(uomId);
         ingredientDTO.setUnitOfMeasure(uomDTO);
+        ingredientDTO.setName("TO_SAVE");
 
-        RecipeDTO savedRecipeDTO = new RecipeDTO();
-        savedRecipeDTO.setId(recipeId);
-        savedRecipeDTO.getIngredients().add(new IngredientDTO());
-        savedRecipeDTO.getIngredients().iterator().next().setId(ingredientId);
+        Recipe recipe = new Recipe();
+        recipe.setId(recipeId);
+        recipe.getIngredients().add(savedIngredient);
+
+        when(mockRecipeReactiveRepository.findById(recipeId)).thenReturn(Mono.just(recipe));
+        when(mockIngredientMapper.toEntityIgnoreRecipeChildObjects(any(IngredientDTO.class))).thenReturn(savedIngredient);
+        when(mockIngredientMapper.toDTO(any(Ingredient.class))).thenReturn(ingredientDTO);
+        when(mockUnitOfMeasureReactiveRepository.findById(anyString())).thenReturn(Mono.just(uom));
+        when(mockRecipeReactiveRepository.save(any(Recipe.class))).thenReturn(Mono.just(recipe));
 
         // when
-        when(mockRecipeService.findById(recipeId)).thenReturn(recipeDTO);
-        when(mockUnitOfMeasureService.findById(anyString())).thenReturn(Mono.just(uomDTO));
-        when(mockRecipeService.save(any(RecipeDTO.class))).thenReturn(savedRecipeDTO);
-        IngredientDTO savedIngredientDTO = ingredientServiceImpl.saveIngredientOnRecipe(recipeId, ingredientDTO).block();
+        IngredientDTO actualSavedIngredientDTO = ingredientServiceImpl.saveIngredientOnRecipe(recipeId, ingredientDTO).block();
 
         // then
-        assertEquals(ingredientId, savedIngredientDTO.getId());
-        verify(mockRecipeService).findById(recipeId);
-        verify(mockUnitOfMeasureService).findById(anyString());
-        verify(mockRecipeService).save(any(RecipeDTO.class));
+        assertEquals(savedIngredient.getName(), actualSavedIngredientDTO.getName());
+        verify(mockRecipeReactiveRepository).findById(recipeId);
+        verify(mockUnitOfMeasureReactiveRepository).findById(anyString());
+        verify(mockRecipeReactiveRepository).save(any(Recipe.class));
     }
 }
