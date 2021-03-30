@@ -21,22 +21,18 @@ public class IngredientRepositoryServiceImpl implements IngredientService {
     private final IngredientReactiveRepository ingredientReactiveRepository;
     private final RecipeReactiveRepository recipeReactiveRepository;
     private final UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
-    private final RecipeMapper recipeMapper;
     private final IngredientMapper ingredientMapper;
-    private final UnitOfMeasureMapper unitOfMeasureMapper;
 
     @Autowired
     public IngredientRepositoryServiceImpl(IngredientReactiveRepository ingredientReactiveRepository,
                                            RecipeReactiveRepository recipeReactiveRepository,
                                            UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository,
-                                           RecipeMapper recipeMapper, IngredientMapper ingredientMapper, UnitOfMeasureMapper unitOfMeasureMapper) {
+                                           IngredientMapper ingredientMapper) {
         this.ingredientReactiveRepository = ingredientReactiveRepository;
         this.recipeReactiveRepository = recipeReactiveRepository;
         this.unitOfMeasureReactiveRepository = unitOfMeasureReactiveRepository;
 
-        this.recipeMapper = recipeMapper;
         this.ingredientMapper = ingredientMapper;
-        this.unitOfMeasureMapper = unitOfMeasureMapper;
     }
 
     @Override

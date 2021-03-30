@@ -52,9 +52,8 @@ class IngredientControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(ingredientController)
-                .setControllerAdvice(new ControllerExceptionHandler())
-                .build();
-
+                                .setControllerAdvice(new ControllerExceptionHandler())
+                                .build();
 
         uomList = Flux.just(unitOfMeasureDTO);
     }

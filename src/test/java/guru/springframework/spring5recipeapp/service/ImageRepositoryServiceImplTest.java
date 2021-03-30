@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 class ImageRepositoryServiceImplTest {
 
     @Mock
-    RecipeReactiveRepository mockRecipeRepository;
+    RecipeReactiveRepository mockRecipeReactiveRepository;
 
     @Mock
     RecipeMapper mockRecipeMapper;
@@ -41,20 +41,22 @@ class ImageRepositoryServiceImplTest {
     @Test
     void saveOnRecipe() throws Exception {
         // given
-        MultipartFile mockMultipartFile = new MockMultipartFile("imagefile", "testing.txt",
+        MultipartFile expectedMultipartFile = new MockMultipartFile("imagefile", "testing.txt",
                 "text/plain", "Spring Framework Guru".getBytes());
 
         Recipe recipe = new Recipe();
         recipe.setId(recipeId);
 
         // when
-        when(mockRecipeRepository.findById(anyString())).thenReturn(Mono.just(recipe));
-        ArgumentCaptor<Recipe> argumentCaptor = ArgumentCaptor.forClass(Recipe.class);
-        imageRepositoryServiceImpl.saveOnRecipe(recipeId, mockMultipartFile);
+        when(mockRecipeReactiveRepository.findById(anyString())).thenReturn(Mono.just(recipe));
+        when(mockRecipeReactiveRepository.save(any(Recipe.class))).thenReturn(Mono.just(recipe));
+        imageRepositoryServiceImpl.saveOnRecipe(recipeId, expectedMultipartFile).block();
 
         // then
-        verify(mockRecipeRepository).save(argumentCaptor.capture());
+        verify(mockRecipeReactiveRepository).findById(recipeId);
+        ArgumentCaptor<Recipe> argumentCaptor = ArgumentCaptor.forClass(Recipe.class);
+        verify(mockRecipeReactiveRepository).save(argumentCaptor.capture());
         Recipe savedRecipe = argumentCaptor.getValue();
-        assertEquals(mockMultipartFile.getBytes().length, savedRecipe.getImage().length);
+        assertEquals(expectedMultipartFile.getBytes().length, savedRecipe.getImage().length);
     }
 }

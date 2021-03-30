@@ -21,7 +21,8 @@ public class IndexController {
     @RequestMapping({"", "/", "/index", "/index.html"})
     public String getIndexPage(Model model) {
         log.debug("Running IndexController - getIndexPage()...");
-        model.addAttribute("recipes", recipeService.findAll());
+        // The Thymeleaf layer can't handle Reactive types at this point => .collectList().block to return List<RecipeDTO>
+        model.addAttribute("recipes", recipeService.findAll().collectList().block());
 
         return "index";
     }

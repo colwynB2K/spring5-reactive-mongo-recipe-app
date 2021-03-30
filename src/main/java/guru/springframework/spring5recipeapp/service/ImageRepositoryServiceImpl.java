@@ -15,26 +15,30 @@ import java.io.IOException;
 @Slf4j
 public class ImageRepositoryServiceImpl implements ImageService {
 
-    private RecipeReactiveRepository recipeRepository;
+    private RecipeReactiveRepository recipeReactiveRepository;
 
     @Autowired
-    public ImageRepositoryServiceImpl(RecipeReactiveRepository recipeRepository) {
-        this.recipeRepository = recipeRepository;
+    public ImageRepositoryServiceImpl(RecipeReactiveRepository recipeReactiveRepository) {
+        this.recipeReactiveRepository = recipeReactiveRepository;
     }
 
     @Override
     public Mono<Void> saveOnRecipe(String recipeId, MultipartFile file) {
         log.debug("Received file: " + file.getName());
 
-        Recipe recipe = recipeRepository.findById(recipeId).block();
-        try {
-            recipe.setImage(ArrayUtils.toObject(file.getBytes())); // Convert from byte[] to Byte[] and set it on the Recipe before saving it
-        } catch (IOException e) {
-            // TODO: Improve error handling
-            log.error("IOException: " + e.getMessage());
-        }
+        Mono<Recipe> recipeMono = recipeReactiveRepository.findById(recipeId)
+                .map(recipe -> {
+                    try {
+                        recipe.setImage(ArrayUtils.toObject(file.getBytes())); // Convert from byte[] to Byte[] and set it on the Recipe before saving it
+                    } catch (IOException e) {
+                        // TODO: Improve error handling;
+                        log.error("IOException: " + e.getMessage());
+                    }
 
-        recipeRepository.save(recipe);
+                    return recipe;
+                });
+
+        recipeReactiveRepository.save(recipeMono.block()).block(); // First block to provide the repository with a Recipe object, second block is to trigger the actual save, probably can be improved upon
 
         return Mono.empty();
     }
