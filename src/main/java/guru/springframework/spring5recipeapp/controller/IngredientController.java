@@ -30,7 +30,7 @@ public class IngredientController {
 
     @GetMapping("/recipes/{recipeId}/ingredients")
     public String showListForRecipe(@PathVariable String recipeId, Model model) {
-        model.addAttribute("recipe", recipeService.findById(recipeId).block());
+        model.addAttribute("recipe", recipeService.findById(recipeId));
 
         return "recipes/ingredients/list";
     }
@@ -49,8 +49,8 @@ public class IngredientController {
 
     @GetMapping("/recipes/{recipeId}/ingredients/{ingredientId}")
     public String showIngredientForRecipe(@PathVariable String ingredientId, Model model) {
-        model.addAttribute("ingredient", ingredientService.findById(ingredientId).block());
-        model.addAttribute("uomList", unitOfMeasureService.findAll().collectList().block());
+        model.addAttribute("ingredient", ingredientService.findById(ingredientId));
+        model.addAttribute("uomList", unitOfMeasureService.findAll());
 
         return "recipes/ingredients/form";
     }
