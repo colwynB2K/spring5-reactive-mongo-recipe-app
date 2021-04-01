@@ -3,11 +3,7 @@ package guru.springframework.spring5recipeapp.domain;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @EqualsAndHashCode(exclude = "recipes")
@@ -17,7 +13,7 @@ public class Category {
     @Id
     private String id;
     private String name;
-    private Set<Recipe> recipes = new HashSet<>();
+    //private Set<Recipe> recipes = new HashSet<>();    // Let's remove this bidirectional reference... as Recipe also points to a category
 
     @Override
     public String toString() {

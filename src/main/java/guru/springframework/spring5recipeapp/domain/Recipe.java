@@ -3,19 +3,16 @@ package guru.springframework.spring5recipeapp.domain;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @EqualsAndHashCode(exclude = {"categories", "notes"})
-// Excluded categories and notes, but left in recipes for equals and hashCode generation as it seems an essential
+// Excluded categories and notes, but left in ingredients for equals and hashCode generation as it seems an essential
 // part of the recipe
-@Document
+@Document(collection = "recipe")
 public class Recipe {
 
     @Id
@@ -37,7 +34,7 @@ public class Recipe {
 
     public Recipe addCategory(Category category) {
         this.categories.add(category);
-        category.getRecipes().add(this);
+//        category.getRecipes().add(this);          // Commented out this bidirectional reference
 
         return this;
     }

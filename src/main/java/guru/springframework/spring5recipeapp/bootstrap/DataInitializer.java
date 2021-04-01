@@ -42,7 +42,7 @@ public class DataInitializer implements ApplicationListener<ContextRefreshedEven
         log.info("Loading Bootstrap Data...");
         loadCategories();
         loadUom();
-        recipeRepository.saveAll(getRecipes());
+        recipeRepository.saveAll(getRecipes()).collectList().block();               // Don't forget to block here or your recipes are not saved into the datavase!
     }
 
     private void loadCategories(){
