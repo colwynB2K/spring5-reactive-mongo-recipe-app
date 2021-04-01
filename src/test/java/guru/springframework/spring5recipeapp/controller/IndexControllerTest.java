@@ -2,63 +2,56 @@ package guru.springframework.spring5recipeapp.controller;
 
 import guru.springframework.spring5recipeapp.dto.RecipeDTO;
 import guru.springframework.spring5recipeapp.service.RecipeService;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.ui.Model;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.reactive.server.WebTestClient;
+
 import reactor.core.publisher.Flux;
 
-import java.util.List;
+import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@WebFluxTest(controllers = IndexController.class)
 class IndexControllerTest {
 
-    @Mock
+    @MockBean
     private RecipeService mockRecipeService;
 
-    @InjectMocks
-    private IndexController indexController;
-
-    private MockMvc mockMvc;
-
-    @BeforeEach
-    void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(indexController)
-                                    .setControllerAdvice(new ControllerExceptionHandler())
-                                    .build();
-    }
+    @Autowired
+    private WebTestClient webTestClient;
 
     @Test
-    public void testIndex() throws Exception {
+    void testIndex() {
         // given
         RecipeDTO expectedRecipe1 = new RecipeDTO();
-        expectedRecipe1.setName("BLAAT");
+        expectedRecipe1.setName("Fajita");
 
         RecipeDTO expectedRecipe2 = new RecipeDTO();
-        expectedRecipe2.setName("MEKKER");
+        expectedRecipe2.setName("Taco");
 
         when(mockRecipeService.findAll()).thenReturn(Flux.just(expectedRecipe1, expectedRecipe2));
 
         // when
 
         // then
-        mockMvc.perform(get("/"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("index"));
+        webTestClient.get().uri("/")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(String.class)
+                .consumeWith(response -> {
+                    String responseBody = Objects.requireNonNull(response.getResponseBody());
+                    assertTrue(responseBody.contains("Fajita"));
+                    assertTrue(responseBody.contains("Taco"));
+                });
 
         verify(mockRecipeService, times(1)).findAll();
     }
