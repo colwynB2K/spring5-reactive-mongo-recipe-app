@@ -27,7 +27,18 @@
         <div class="col-lg-10 offset-md-1">
             <form th:object="${ingredient}" th:action="@{'/recipes/' + ${ingredient.recipeId} + '/ingredients'} "
                   method="post">
+
+                <!--/*
+                    Display div in case of any validation error
+                        bootstrap CSS class alert-danger will display a red box
+                        th:if only shows this in case of errors
+                 */-->
+                <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+                    <p>Please Correct Errors Below</p>
+                </div>
+
                 <input type="hidden" th:field="*{id}">
+                <input type="hidden" th:field="*{recipeId}">
                 <div class="pannel-group">
                     <div class="card">
                         <div class="card-header text-white bg-primary">
@@ -37,20 +48,56 @@
                             <div class="row">
                                 <div class="col-lg-3 form-group">
                                     <label>Amount:</label>
-                                    <input type="number" class="form-control" th:field="*{amount}">
+                                    <!--/*
+                                    If there are validation errors related to the 'amount' property
+                                        - add Bootstrap CSS class has-error to make the input field red
+                                        - add a span with Bootstrap CSS class invalid-feedback to display all validation errors related to the 'amount' property
+                                     */-->
+                                    <div class="col-lg-3" th:class="${#fields.hasErrors('amount')} ? 'col-lg-3 is-invalid' : 'col-lg-3'">
+                                        <input type="number" class="form-control" th:field="*{amount}" th:errorClass="is-invalid" placeholder="Ingredient Amount">
+                                        <span class="invalid-feedback" th:if="${#fields.hasErrors('amount')}">
+                                            <ul>
+                                                <li th:each="err : ${#fields.errors('amount')}" th:text="${err}"/>
+                                            </ul>
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div class="col-lg-3 form-group">
                                     <label>UOM:</label>
-                                    <select class="form-control" name="unitOfMeasure.id">
-                                        <option th:each="uom : ${uomList}" th:value="${uom.id}" th:selected="${ingredient.unitOfMeasure != null ? uom.id.equals(ingredient.unitOfMeasure.id) : false}"
-                                                th:text="${uom.name}">Each</option>
-                                    </select>
+                                    <!--/*
+                                   If there are validation errors related to the 'amount' property
+                                       - add Bootstrap CSS class has-error to make the input field red
+                                       - add a span with Bootstrap CSS class invalid-feedback to display all validation errors related to the 'amount' property
+                                    */-->
+                                    <div class="col-lg-3" th:class="${#fields.hasErrors('unitOfMeasure')} ? 'col-lg-3 is-invalid' : 'col-lg-3'">
+                                        <select class="form-control" name="unitOfMeasure.id" th:errorClass="is-invalid">
+                                            <option th:each="uom : ${uomList}" th:value="${uom.id}" th:selected="${ingredient.unitOfMeasure != null ? uom.id.equals(ingredient.unitOfMeasure.id) : false}"
+                                                    th:text="${uom.name}">Each</option>
+                                        </select>
+                                        <span class="invalid-feedback" th:if="${#fields.hasErrors('unitOfMeasure')}">
+                                            <ul>
+                                                <li th:each="err : ${#fields.errors('unitOfMeasure')}" th:text="${err}"/>
+                                            </ul>
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div class="col-lg-3 form-group">
-                                    <label>Description:</label>
-                                    <input type="text" class="form-control" th:field="*{name}">
+                                    <label>Name:</label>
+                                    <!--/*
+                                    If there are validation errors related to the 'name' property
+                                        - add Bootstrap CSS class has-error to make the input field red
+                                        - add a span with Bootstrap CSS class invalid-feedback to display all validation errors related to the 'name' property
+                                     */-->
+                                    <div class="col-lg-3" th:class="${#fields.hasErrors('name')} ? 'col-lg-3 is-invalid' : 'col-lg-3'">
+                                        <input type="text" class="form-control" th:field="*{name}" th:errorClass="is-invalid" placeholder="Ingredient Name">
+                                        <span class="invalid-feedback" th:if="${#fields.hasErrors('name')}">
+                                            <ul>
+                                                <li th:each="err : ${#fields.errors('name')}" th:text="${err}"/>
+                                            </ul>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

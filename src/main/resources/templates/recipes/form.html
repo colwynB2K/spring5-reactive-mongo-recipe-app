@@ -56,7 +56,7 @@
                                     <!--/*
                                     If there are validation errors related to the 'name' property
                                         - add Bootstrap CSS class has-error to make the input field red
-                                        - add a spand with Bootstrap CSS class invalid-feedback to display all validation errors related to the 'name' property
+                                        - add a span with Bootstrap CSS class invalid-feedback to display all validation errors related to the 'name' property
                                      */-->
                                     <div class="col-lg-3" th:class="${#fields.hasErrors('name')} ? 'col-lg-3 is-invalid' : 'col-lg-3'">
                                         <input type="text" class="form-control" th:field="*{name}" th:errorClass="is-invalid" placeholder="Recipe Name"/>

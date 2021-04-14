@@ -81,7 +81,10 @@ public class IngredientRepositoryServiceImpl implements IngredientService {
         // To be able to display the saved ingredient data (for further editing), we need to return the savedIngredient (by fetching it from the saved Recipe again)
         // When we are updating an existing ingredient the incoming ingredientDTO will already contain the new state, so we can just return that
         if (ingredient.getId() != null) {
-            return Mono.just(ingredientMapper.toDTO(ingredient));
+            ingredientDTO = ingredientMapper.toDTO(ingredient);
+            ingredientDTO.setRecipeId(recipeId);
+
+            return Mono.just(ingredientDTO);
         } else {
             // If we are saving a NEW ingredient the incoming ingredientDTO will NOT have an id, so we can only fetch it from the saved Recipe
             // by looking for an Ingredient with the same Name value.
@@ -93,7 +96,10 @@ public class IngredientRepositoryServiceImpl implements IngredientService {
                     .filter(recipeIngredient -> recipeIngredient.getUnitOfMeasure().getId().equals(ingredient.getUnitOfMeasure().getId())) // Filtering UOM (object) doesn't work, you need to filter on a property
                     .findFirst().get();
 
-            return Mono.just(ingredientMapper.toDTO(savedIngredient));
+            ingredientDTO = ingredientMapper.toDTO(savedIngredient);
+            ingredientDTO.setRecipeId(recipeId);
+
+            return Mono.just(ingredientDTO);
         }
 }
 

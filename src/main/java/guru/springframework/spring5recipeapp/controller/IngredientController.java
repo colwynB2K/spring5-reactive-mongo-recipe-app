@@ -9,18 +9,27 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @Slf4j
 public class IngredientController {
 
+    public static final String VIEWS_RECIPES_INGREDIENTS_FORM = "recipes/ingredients/form";
+
     private final IngredientService ingredientService;
     private final RecipeService recipeService;
     private final UnitOfMeasureService unitOfMeasureService;
+
+    // Manually get a handle on the binding framework within Spring
+    private WebDataBinder webDataBinder;
+
+    @InitBinder
+    public void initBinder(WebDataBinder webDataBinder) {
+        this.webDataBinder = webDataBinder;
+    }
 
     @Autowired
     public IngredientController(IngredientService ingredientService, RecipeService recipeService,
@@ -46,7 +55,7 @@ public class IngredientController {
         model.addAttribute("ingredient", ingredientDTO);
         model.addAttribute("uomList", unitOfMeasureService.findAll());
 
-        return "recipes/ingredients/form";
+        return VIEWS_RECIPES_INGREDIENTS_FORM;
     }
 
     @GetMapping("/recipes/{recipeId}/ingredients/{ingredientId}")
@@ -54,11 +63,26 @@ public class IngredientController {
         model.addAttribute("ingredient", ingredientService.findById(recipeId, ingredientId));
         model.addAttribute("uomList", unitOfMeasureService.findAll());
 
-        return "recipes/ingredients/form";  
+        return VIEWS_RECIPES_INGREDIENTS_FORM;
     }
 
+    // Do NOT forget to add the model parameter for setting the uomList for the form in case of a validation error
     @PostMapping("/recipes/{recipeId}/ingredients")
-    public String save(@PathVariable String recipeId, @ModelAttribute IngredientDTO ingredientDTO) {              // The incoming uomDTO will only contain an id from the form select box here
+    public String save(@PathVariable String recipeId, @ModelAttribute("ingredient") IngredientDTO ingredientDTO, Model model) {              // The incoming uomDTO will only contain an id from the form select box here
+
+        // Manually perform the validation and bind the result, so you can check for validation errors
+        webDataBinder.validate();
+        BindingResult bindingResult = webDataBinder.getBindingResult();
+
+        // Check validation result, log any validation errors and in that case return to the recipe form
+        if (bindingResult.hasErrors()) {
+            bindingResult.getAllErrors().forEach(objectError -> log.debug(objectError.toString()));
+
+            model.addAttribute("uomList", unitOfMeasureService.findAll());
+
+            return VIEWS_RECIPES_INGREDIENTS_FORM;
+        }
+
         IngredientDTO savedIngredientDTO = ingredientService.saveIngredientOnRecipe(recipeId, ingredientDTO).block();
 
         return "redirect:/recipes/" + recipeId + "/ingredients/" + savedIngredientDTO.getId();
