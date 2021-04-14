@@ -15,7 +15,8 @@ public class IngredientDTO {
     private String name;
     private UnitOfMeasureDTO unitOfMeasure;
     private String formattedString;
-    private RecipeDTO recipe;
+    // private RecipeDTO recipe;                    // Remove bi-directional relationship
+    private String recipeId;
 
     public String getFormattedString() {
         if (formattedString == null) {

@@ -18,6 +18,7 @@ public class Ingredient {
     private String name;
     private UnitOfMeasure unitOfMeasure;
     //private Recipe recipe;                // Commented out this bidirectional reference
+    //private String recipeId;
 
     public Ingredient() {
     }

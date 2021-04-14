@@ -48,7 +48,7 @@ public class RecipeController {
 
     @GetMapping("/{recipeId}")
     public String showRecipeDetail(@PathVariable String recipeId, Model model) {
-        model.addAttribute(RECIPE_ATTRIBUTE_NAME, recipeService.findById(recipeId).block());
+        model.addAttribute(RECIPE_ATTRIBUTE_NAME, recipeService.findById(recipeId));
 
         return VIEWS_RECIPES_DETAIL;
     }

@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
 public class IngredientRepositoryServiceImpl implements IngredientService {
@@ -36,8 +38,32 @@ public class IngredientRepositoryServiceImpl implements IngredientService {
     }
 
     @Override
-    public Mono<IngredientDTO> findById(String ingredientId) {
-        return ingredientReactiveRepository.findById(ingredientId).map(ingredientMapper::toDTO);
+    public Mono<IngredientDTO> findById(String recipeId, String ingredientId) {
+
+        return recipeReactiveRepository.findById(recipeId)
+                                        .map(recipe -> recipe.getIngredients()
+                                                            .stream()
+                                                            .filter(ingredient -> ingredient.getId().equalsIgnoreCase(ingredientId))
+                                                            .findFirst())
+                                        .filter(Optional::isPresent)
+                                        .map(ingredient -> {
+                                                    IngredientDTO ingredientDTO = ingredientMapper.toDTO(ingredient.get()); //
+                                                    ingredientDTO.setRecipeId(recipeId);
+
+                                                   return ingredientDTO;
+                                        });
+
+        // Likely this code ends up in a null ingredientDTO in the weblayer
+        // because of the ingredientMapper not being able to handle the mapping of an Mono<Ingredient> to a Mono<IngredientDTO>???
+/*        return ingredientReactiveRepository.findById(ingredientId)
+                .map(ingredient -> {
+                    IngredientDTO ingredientDTO = ingredientMapper.toDTO(ingredient);
+                    ingredientDTO.setRecipeId(recipeId);
+
+                    log.error("ingredientDTO = " + ingredientDTO);
+
+                    return ingredientDTO;
+                });*/
     }
 
     @Override

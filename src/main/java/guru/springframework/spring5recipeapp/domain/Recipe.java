@@ -42,12 +42,14 @@ public class Recipe {
     public Recipe addIngredient(Ingredient ingredient) {
         this.ingredients.add(ingredient);
         //ingredient.setRecipe(this);                   // Commented out this bidirectional reference
+       // ingredient.setRecipeId(this.id); // Can't do that if the recipe wasn't saved yet, because it will have id null, BUMMER
 
         return this;
     }
 
     public Recipe addIngredients(List<Ingredient> ingredients) {
         //ingredients.stream().forEach(ingredient -> ingredient.setRecipe(this));       // Commented out this bidirectional reference
+        //ingredients.stream().forEach(ingredient -> ingredient.setRecipeId(this.id));       // Commented out this bidirectional reference
         this.setIngredients(ingredients);
 
         return this;

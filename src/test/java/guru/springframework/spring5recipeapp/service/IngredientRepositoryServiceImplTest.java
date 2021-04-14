@@ -46,6 +46,7 @@ class IngredientRepositoryServiceImplTest {
 
     private Ingredient ingredient;
     private IngredientDTO ingredientDTO;
+    private Recipe recipe;
     private RecipeDTO recipeDTO;
 
     private final String recipeId = "1";
@@ -54,11 +55,12 @@ class IngredientRepositoryServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        recipeDTO = new RecipeDTO();
-        recipeDTO.setId(recipeId);
+        recipe = new Recipe();
+        recipe.setId(recipeId);
 
         ingredient = new Ingredient();
         ingredient.setId(ingredientId);
+
         ingredientDTO = new IngredientDTO();
         ingredientDTO.setId(ingredientId);
     }
@@ -66,18 +68,17 @@ class IngredientRepositoryServiceImplTest {
     @Test
     void findById() {
         // given
-        ingredientDTO.setRecipe(recipeDTO);
 
-        List<IngredientDTO> ingredientDTOs = new ArrayList<>();
-        ingredientDTOs.add(ingredientDTO);
-        recipeDTO.setIngredients(ingredientDTOs);
+        List<Ingredient> ingredients = new ArrayList<>();
+        ingredients.add(ingredient);
+        recipe.setIngredients(ingredients);
 
         // when
-        when(mockIngredientReactiveRepository.findById(ingredientId)).thenReturn(Mono.just(ingredient));
+        when(mockRecipeReactiveRepository.findById(recipeId)).thenReturn(Mono.just(recipe));
         when(mockIngredientMapper.toDTO(ingredient)).thenReturn(ingredientDTO);
-        IngredientDTO actualIngredientDTO = ingredientRepositoryServiceImpl.findById(ingredientId).block();
+        IngredientDTO actualIngredientDTO = ingredientRepositoryServiceImpl.findById(recipeId, ingredientId).block();
 
-        verify(mockIngredientReactiveRepository).findById(ingredientId);
+        verify(mockRecipeReactiveRepository).findById(recipeId);
         verify(mockIngredientMapper).toDTO(ingredient);
         assertEquals(ingredientId, actualIngredientDTO.getId());
     }

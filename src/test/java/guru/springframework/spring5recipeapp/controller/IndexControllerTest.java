@@ -4,12 +4,10 @@ import guru.springframework.spring5recipeapp.dto.RecipeDTO;
 import guru.springframework.spring5recipeapp.service.RecipeService;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import reactor.core.publisher.Flux;
@@ -19,7 +17,6 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(SpringExtension.class)
 @WebFluxTest(controllers = IndexController.class)
 class IndexControllerTest {
 
@@ -52,6 +49,7 @@ class IndexControllerTest {
                     assertTrue(responseBody.contains("Fajita"));
                     assertTrue(responseBody.contains("Taco"));
                 });
+                //.andExpect(view().name("index"));
 
         verify(mockRecipeService, times(1)).findAll();
     }

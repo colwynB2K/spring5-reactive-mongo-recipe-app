@@ -5,6 +5,7 @@ import guru.springframework.spring5recipeapp.dto.RecipeDTO;
 import guru.springframework.spring5recipeapp.service.IngredientService;
 import guru.springframework.spring5recipeapp.service.RecipeService;
 import guru.springframework.spring5recipeapp.service.UnitOfMeasureService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
+@Slf4j
 public class IngredientController {
 
     private final IngredientService ingredientService;
@@ -40,19 +42,19 @@ public class IngredientController {
         IngredientDTO ingredientDTO = new IngredientDTO();
         RecipeDTO recipeDTO = new RecipeDTO();
         recipeDTO.setId(recipeId);
-        ingredientDTO.setRecipe(recipeDTO);
+        ingredientDTO.setRecipeId(recipeId);
         model.addAttribute("ingredient", ingredientDTO);
-        model.addAttribute("uomList", unitOfMeasureService.findAll().collectList().block());
+        model.addAttribute("uomList", unitOfMeasureService.findAll());
 
         return "recipes/ingredients/form";
     }
 
     @GetMapping("/recipes/{recipeId}/ingredients/{ingredientId}")
-    public String showIngredientForRecipe(@PathVariable String ingredientId, Model model) {
-        model.addAttribute("ingredient", ingredientService.findById(ingredientId));
+    public String showIngredientForRecipe(@PathVariable String recipeId, @PathVariable String ingredientId, Model model) {
+        model.addAttribute("ingredient", ingredientService.findById(recipeId, ingredientId));
         model.addAttribute("uomList", unitOfMeasureService.findAll());
 
-        return "recipes/ingredients/form";
+        return "recipes/ingredients/form";  
     }
 
     @PostMapping("/recipes/{recipeId}/ingredients")
