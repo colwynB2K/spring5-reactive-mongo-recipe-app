@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,6 +40,14 @@ public class RecipeController {
     private final RecipeService recipeService;
     private final ImageService imageService;
 
+    // Manually get a handle on the binding framework within Spring
+    private WebDataBinder webDataBinder;
+
+    @InitBinder
+    public void initBinder(WebDataBinder webDataBinder) {
+        this.webDataBinder = webDataBinder;
+    }
+
     @Autowired
     public RecipeController(CategoryService categoryService, RecipeService recipeService, ImageService imageService) {
         this.categoryService = categoryService;
@@ -56,7 +65,7 @@ public class RecipeController {
     @GetMapping({"/edit", "/edit/{recipeId}"})
     public String showRecipeForm(@PathVariable(required = false) String recipeId, Model model) {
         if (recipeId != null) {
-            model.addAttribute(RECIPE_ATTRIBUTE_NAME, recipeService.findById(recipeId).block());
+            model.addAttribute(RECIPE_ATTRIBUTE_NAME, recipeService.findById(recipeId));
         } else {
             model.addAttribute(RECIPE_ATTRIBUTE_NAME, new RecipeDTO());
         }
@@ -66,7 +75,11 @@ public class RecipeController {
     }
 
     @PostMapping("")
-    public String saveRecipe(@Valid @ModelAttribute("recipe") RecipeDTO recipe, BindingResult bindingResult) {   // Add @Valid to the Modelattribute parameter to trigger Bean Validation. Make sure to add the model attribute name if the parameter type name doesn't match the object name in the form in the th:object Thymeleaf attribute. Add BindingResult parameters which will contains the validation result.
+    public String saveRecipe(@ModelAttribute("recipe") RecipeDTO recipe) {
+
+        // Manually perform the validation and bind the result, so you can check for validaiton errors
+        webDataBinder.validate();
+        BindingResult bindingResult = webDataBinder.getBindingResult();
 
         // Check validation result, log any validation errors and in that case return to the recipe form
         if (bindingResult.hasErrors()) {
@@ -89,7 +102,7 @@ public class RecipeController {
 
     @GetMapping("/{recipeId}/image/edit")
     public String showImageUploadForm(@PathVariable String recipeId, Model model) {
-        model.addAttribute(RECIPE_ATTRIBUTE_NAME, recipeService.findById(recipeId).block());
+        model.addAttribute(RECIPE_ATTRIBUTE_NAME, recipeService.findById(recipeId));
 
         return VIEWS_RECIPES_IMAGES_FORM;
     }
