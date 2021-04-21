@@ -22,6 +22,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.thymeleaf.exceptions.TemplateInputException;
+
 @Slf4j
 @Controller
 @RequestMapping("/recipes")
@@ -126,14 +128,14 @@ public class RecipeController {
         }
     }*/
 
-/*    @ExceptionHandler(ObjectNotFoundException.class)
+    @ExceptionHandler({ObjectNotFoundException.class, TemplateInputException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ModelAndView handleObjectNotFoundException(Exception exception) {
+    public String handleObjectNotFoundException(Exception exception, Model model) {
         log.warn("Handling ObjectNotFoundException");
         log.warn(exception.getMessage());
-        ModelAndView mav = new ModelAndView("404");
-        mav.addObject("exception", exception);
 
-        return mav;
-    }*/
+        model.addAttribute("exception", exception);
+
+        return VIEWS_404;
+    }
 }
