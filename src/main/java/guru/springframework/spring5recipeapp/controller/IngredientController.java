@@ -3,22 +3,26 @@ package guru.springframework.spring5recipeapp.controller;
 import guru.springframework.spring5recipeapp.dto.IngredientDTO;
 import guru.springframework.spring5recipeapp.dto.RecipeDTO;
 import guru.springframework.spring5recipeapp.dto.UnitOfMeasureDTO;
+import guru.springframework.spring5recipeapp.exception.ObjectNotFoundException;
 import guru.springframework.spring5recipeapp.service.IngredientService;
 import guru.springframework.spring5recipeapp.service.RecipeService;
 import guru.springframework.spring5recipeapp.service.UnitOfMeasureService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.exceptions.TemplateInputException;
 import reactor.core.publisher.Flux;
 
 @Controller
 @Slf4j
 public class IngredientController {
 
+    public static final String VIEWS_404 = "404";
     public static final String VIEWS_RECIPES_INGREDIENTS_FORM = "recipes/ingredients/form";
 
     private final IngredientService ingredientService;
@@ -97,5 +101,16 @@ public class IngredientController {
     @ModelAttribute("uomList")          // uomList is the property name it is going to bind the output of this method to
     public Flux<UnitOfMeasureDTO> populateUomList() {
         return  unitOfMeasureService.findAll();
+    }
+
+    @ExceptionHandler({ObjectNotFoundException.class, TemplateInputException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleObjectNotFoundException(Exception exception, Model model) {
+        log.warn("Handling ObjectNotFoundException");
+        log.warn(exception.getMessage());
+
+        model.addAttribute("exception", exception);
+
+        return VIEWS_404;
     }
 }
